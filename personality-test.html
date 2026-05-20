@@ -1,0 +1,2222 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>人格花园 · 八维人格测试</title>
+<style>
+:root {
+  --bg-cream: #FDF6EC;
+  --bg-warm: #F7EDE2;
+  --paper: #FFFDF8;
+  --paper-shadow: rgba(139,109,74,0.12);
+  --paper-border: rgba(139,109,74,0.18);
+  --text-primary: #3D2C1E;
+  --text-secondary: #8B7D6B;
+  --text-tertiary: #B5A99A;
+  --ink: #5C4A3A;
+  --mbti: #9B8EC4;
+  --mbti-light: #E8E0F7;
+  --attach: #D4898E;
+  --attach-light: #FBE4E7;
+  --enneagram: #D4A857;
+  --enneagram-light: #FDF2D8;
+  --bigfive: #7BAE8E;
+  --bigfive-light: #DEF0E8;
+  --animal: #C4836A;
+  --animal-light: #F5E0D8;
+  --love: #E08A8A;
+  --love-light: #FCE4E4;
+  --disc: #7BA3C4;
+  --disc-light: #DFEBF5;
+  --holland: #A3B87B;
+  --holland-light: #EBF2E0;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg-cream);
+  color: var(--text-primary);
+  font-family: 'Georgia', 'Noto Serif SC', 'PingFang SC', 'Microsoft YaHei', serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+/* Warm watercolor wash background */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 15% 25%, rgba(155,142,196,0.12) 0%, transparent 50%),
+    radial-gradient(ellipse at 85% 15%, rgba(212,137,142,0.10) 0%, transparent 45%),
+    radial-gradient(ellipse at 50% 80%, rgba(123,174,142,0.10) 0%, transparent 50%),
+    radial-gradient(ellipse at 70% 50%, rgba(212,168,87,0.08) 0%, transparent 40%);
+  pointer-events: none;
+  z-index: 0;
+}
+/* Subtle paper texture overlay */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%238B6D4A' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+}
+#app { position: relative; z-index: 1; }
+
+/* ====== SCREEN MANAGEMENT ====== */
+.screen { display: none; animation: fadeInUp 0.5s ease; }
+.screen.active { display: block; }
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes slideLeft {
+  from { opacity: 0; transform: translateX(40px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+@keyframes pop {
+  0% { transform: scale(0.8); opacity: 0; }
+  60% { transform: scale(1.05); }
+  100% { transform: scale(1); opacity: 1; }
+}
+@keyframes pulse-ring {
+  0% { transform: scale(1); opacity: 0.8; }
+  100% { transform: scale(1.6); opacity: 0; }
+}
+
+/* ====== HOME ====== */
+#home { padding: 60px 20px 80px; max-width: 900px; margin: 0 auto; }
+.home-hero { text-align: center; margin-bottom: 60px; }
+.home-hero h1 {
+  font-size: clamp(2rem, 5vw, 3.2rem);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--ink);
+  margin-bottom: 16px;
+  position: relative;
+  display: inline-block;
+}
+.home-hero h1::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 10%;
+  right: 10%;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, var(--attach), var(--mbti), var(--bigfive), transparent);
+  border-radius: 2px;
+}
+.home-hero p { color: var(--text-secondary); font-size: 1.05rem; line-height: 1.8; font-style: italic; }
+.badge-row { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-top: 20px; }
+.badge {
+  padding: 5px 14px; border-radius: 16px; font-size: 0.78rem;
+  background: var(--paper); border: 1px solid var(--paper-border);
+  color: var(--text-secondary);
+  box-shadow: 0 2px 8px rgba(139,109,74,0.08);
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif;
+}
+
+.test-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; }
+.test-card {
+  background: var(--paper); border: 1px solid var(--paper-border);
+  border-radius: 16px; padding: 28px 24px; cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  position: relative; overflow: hidden;
+  box-shadow: 0 4px 16px var(--paper-shadow);
+}
+.test-card::before {
+  content: ''; position: absolute; inset: 0; border-radius: 16px;
+  background: var(--card-glow); opacity: 0; transition: opacity 0.3s;
+}
+.test-card:hover { transform: translateY(-6px) rotate(-0.5deg); box-shadow: 0 12px 32px rgba(139,109,74,0.18); }
+.test-card:hover::before { opacity: 1; }
+.test-card.completed { border-color: rgba(123,174,142,0.5); }
+.card-icon { font-size: 2.4rem; margin-bottom: 14px; display: block; }
+.card-title { font-size: 1.15rem; font-weight: 700; margin-bottom: 8px; }
+.card-desc { font-size: 0.85rem; color: var(--text-secondary); line-height: 1.6; margin-bottom: 16px; }
+.card-meta { display: flex; align-items: center; justify-content: space-between; }
+.card-time { font-size: 0.78rem; color: var(--text-tertiary); }
+.card-btn {
+  padding: 8px 18px; border-radius: 20px; font-size: 0.82rem; font-weight: 600;
+  border: none; cursor: pointer; transition: all 0.2s;
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif;
+}
+.completed-badge {
+  position: absolute; top: 16px; right: 16px;
+  background: rgba(123,174,142,0.15); border: 1px solid rgba(123,174,142,0.4);
+  color: #5B9E78; font-size: 0.72rem; padding: 3px 10px; border-radius: 16px;
+}
+.dashboard-btn-wrap { text-align: center; margin-top: 40px; }
+.dashboard-btn {
+  padding: 14px 40px; border-radius: 50px; font-size: 1rem; font-weight: 700;
+  border: none; cursor: pointer; background: linear-gradient(135deg, var(--mbti), var(--attach));
+  color: white; transition: all 0.3s; box-shadow: 0 4px 20px rgba(155,142,196,0.3);
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif;
+}
+.dashboard-btn:hover { transform: scale(1.05); box-shadow: 0 6px 28px rgba(155,142,196,0.4); }
+.dashboard-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+/* MBTI card */
+.test-card[data-test="mbti"] { --card-glow: linear-gradient(135deg, rgba(155,142,196,0.08), transparent); }
+.test-card[data-test="mbti"] .card-title { color: var(--mbti); }
+.test-card[data-test="mbti"] .card-btn { background: var(--mbti); color: white; }
+/* Attachment */
+.test-card[data-test="attachment"] { --card-glow: linear-gradient(135deg, rgba(212,137,142,0.08), transparent); }
+.test-card[data-test="attachment"] .card-title { color: var(--attach); }
+.test-card[data-test="attachment"] .card-btn { background: var(--attach); color: white; }
+/* Enneagram */
+.test-card[data-test="enneagram"] { --card-glow: linear-gradient(135deg, rgba(212,168,87,0.08), transparent); }
+.test-card[data-test="enneagram"] .card-title { color: var(--enneagram); }
+.test-card[data-test="enneagram"] .card-btn { background: var(--enneagram); color: #3D2C1E; }
+/* Big Five */
+.test-card[data-test="bigfive"] { --card-glow: linear-gradient(135deg, rgba(123,174,142,0.08), transparent); }
+.test-card[data-test="bigfive"] .card-title { color: var(--bigfive); }
+.test-card[data-test="bigfive"] .card-btn { background: var(--bigfive); color: #3D2C1E; }
+/* Animal */
+.test-card[data-test="animal"] { --card-glow: linear-gradient(135deg, rgba(196,131,106,0.08), transparent); }
+.test-card[data-test="animal"] .card-title { color: var(--animal); }
+.test-card[data-test="animal"] .card-btn { background: var(--animal); color: white; }
+.test-card[data-test="love"] { --card-glow: linear-gradient(135deg, rgba(224,138,138,0.08), transparent); }
+.test-card[data-test="love"] .card-title { color: var(--love); }
+.test-card[data-test="love"] .card-btn { background: var(--love); color: white; }
+.test-card[data-test="disc"] { --card-glow: linear-gradient(135deg, rgba(123,163,196,0.08), transparent); }
+.test-card[data-test="disc"] .card-title { color: var(--disc); }
+.test-card[data-test="disc"] .card-btn { background: var(--disc); color: white; }
+.test-card[data-test="holland"] { --card-glow: linear-gradient(135deg, rgba(163,184,123,0.08), transparent); }
+.test-card[data-test="holland"] .card-title { color: var(--holland); }
+.test-card[data-test="holland"] .card-btn { background: var(--holland); color: #3D2C1E; }
+
+/* ====== TEST SCREEN ====== */
+#test-screen { max-width: 700px; margin: 0 auto; padding: 30px 20px 80px; }
+.test-header {
+  display: flex; align-items: center; gap: 16px; margin-bottom: 30px;
+}
+.back-btn {
+  background: var(--paper); border: 1px solid var(--paper-border);
+  color: var(--text-secondary); padding: 8px 16px; border-radius: 20px;
+  cursor: pointer; font-size: 0.85rem; transition: all 0.2s; white-space: nowrap;
+  box-shadow: 0 2px 6px rgba(139,109,74,0.08);
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+}
+.back-btn:hover { color: var(--text-primary); background: var(--bg-warm); }
+.test-header-info { flex: 1; }
+.test-name { font-size: 1rem; font-weight: 700; margin-bottom: 6px; }
+.progress-bar-wrap { background: rgba(139,109,74,0.1); border-radius: 10px; height: 6px; }
+.progress-bar { height: 6px; border-radius: 10px; transition: width 0.4s ease; }
+.q-counter { font-size: 0.8rem; color: var(--text-tertiary); margin-top: 4px; }
+
+.question-wrap { animation: slideLeft 0.35s ease; }
+.question-card {
+  background: var(--paper); border: 1px solid var(--paper-border);
+  border-radius: 16px; padding: 32px; margin-bottom: 20px;
+  box-shadow: 0 4px 16px var(--paper-shadow);
+}
+.q-num { font-size: 0.78rem; color: var(--text-tertiary); margin-bottom: 12px; letter-spacing: 0.05em; }
+.q-text { font-size: 1.1rem; line-height: 1.7; font-weight: 500; color: var(--ink); }
+
+/* Binary options */
+.options-binary { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.opt-btn {
+  background: var(--paper); border: 1px solid var(--paper-border);
+  border-radius: 16px; padding: 18px 16px; cursor: pointer;
+  transition: all 0.2s; text-align: left; color: var(--text-primary);
+  font-size: 0.9rem; line-height: 1.5;
+  box-shadow: 0 2px 8px rgba(139,109,74,0.06);
+}
+.opt-btn .opt-label {
+  display: inline-block; width: 22px; height: 22px; border-radius: 50%;
+  text-align: center; line-height: 22px; font-size: 0.75rem; font-weight: 700;
+  margin-bottom: 8px; margin-right: 2px;
+}
+.opt-btn:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(139,109,74,0.15); }
+.opt-btn.selected { border-width: 2px; }
+
+/* Rating options */
+.options-rating { display: flex; gap: 8px; align-items: flex-end; justify-content: center; padding: 8px 0; }
+.rating-labels { display: flex; justify-content: space-between; font-size: 0.72rem; color: var(--text-tertiary); margin-top: 8px; }
+.rate-btn {
+  border: 2px solid var(--paper-border); background: var(--paper);
+  border-radius: 50%; cursor: pointer; transition: all 0.2s;
+  color: var(--text-primary); font-weight: 700; font-size: 0.9rem;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.rate-btn:nth-child(1) { width: 40px; height: 40px; }
+.rate-btn:nth-child(2) { width: 44px; height: 44px; }
+.rate-btn:nth-child(3) { width: 50px; height: 50px; }
+.rate-btn:nth-child(4) { width: 44px; height: 44px; }
+.rate-btn:nth-child(5) { width: 40px; height: 40px; }
+.rate-btn:hover { transform: scale(1.15); }
+.rate-btn.selected { border-width: 3px; }
+
+/* 4-choice options */
+.options-quad { display: grid; gap: 12px; }
+.quad-btn {
+  background: var(--paper); border: 1px solid var(--paper-border);
+  border-radius: 14px; padding: 14px 18px; cursor: pointer;
+  transition: all 0.2s; text-align: left; color: var(--text-primary);
+  font-size: 0.88rem; line-height: 1.55; display: flex; align-items: flex-start; gap: 10px;
+  box-shadow: 0 2px 8px rgba(139,109,74,0.06);
+}
+.quad-btn:hover { transform: translateX(4px); }
+.quad-btn.selected { border-width: 2px; }
+.quad-tag {
+  flex-shrink: 0; width: 24px; height: 24px; border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.75rem; font-weight: 700;
+}
+
+/* ====== RESULT SCREEN ====== */
+#result-screen { max-width: 700px; margin: 0 auto; padding: 30px 20px 80px; }
+.result-header { text-align: center; margin-bottom: 40px; }
+.result-emoji { font-size: 5rem; display: block; margin-bottom: 16px; animation: pop 0.6s ease; }
+.result-type-name {
+  font-size: clamp(1.8rem, 5vw, 2.8rem); font-weight: 800;
+  margin-bottom: 8px; letter-spacing: -0.02em;
+}
+.result-subtitle { color: var(--text-secondary); font-size: 1rem; margin-bottom: 24px; }
+.result-tags { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+.result-tag {
+  padding: 5px 14px; border-radius: 20px; font-size: 0.82rem; font-weight: 500;
+  background: var(--bg-warm); border: 1px solid var(--paper-border);
+  color: var(--text-secondary);
+}
+.result-body { display: grid; gap: 16px; margin-bottom: 30px; }
+.result-section {
+  background: var(--paper); border: 1px solid var(--paper-border);
+  border-radius: 16px; padding: 24px;
+  box-shadow: 0 4px 16px var(--paper-shadow);
+}
+.result-section h3 { font-size: 0.85rem; letter-spacing: 0.08em; color: var(--text-tertiary); margin-bottom: 12px; text-transform: uppercase; }
+.result-section p { line-height: 1.75; font-size: 0.95rem; color: var(--text-primary); }
+
+/* Bar chart for Big Five */
+.bar-chart { display: grid; gap: 14px; }
+.bar-item { }
+.bar-label-row { display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 0.85rem; }
+.bar-track { background: rgba(139,109,74,0.08); border-radius: 10px; height: 10px; }
+.bar-fill { height: 10px; border-radius: 10px; transition: width 0.8s ease; }
+
+.result-actions { display: flex; gap: 14px; flex-wrap: wrap; }
+.btn-primary {
+  flex: 1; padding: 14px; border-radius: 50px; font-size: 0.95rem; font-weight: 700;
+  border: none; cursor: pointer; color: white; transition: all 0.3s;
+  min-width: 140px;
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+}
+.btn-secondary {
+  flex: 1; padding: 14px; border-radius: 50px; font-size: 0.95rem; font-weight: 700;
+  border: 1px solid var(--paper-border); background: var(--paper);
+  cursor: pointer; color: var(--text-primary); transition: all 0.2s;
+  min-width: 140px;
+  box-shadow: 0 2px 8px rgba(139,109,74,0.08);
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+}
+.btn-secondary:hover { background: var(--bg-warm); }
+
+/* ====== DASHBOARD ====== */
+#dashboard-screen { max-width: 860px; margin: 0 auto; padding: 40px 20px 80px; }
+.dash-hero { text-align: center; margin-bottom: 50px; }
+.dash-hero h1 { font-size: clamp(1.6rem, 4vw, 2.4rem); font-weight: 800; margin-bottom: 12px;
+  color: var(--ink);
+}
+.dash-hero p { color: var(--text-secondary); font-size: 0.95rem; }
+.dash-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; margin-bottom: 40px; }
+.dash-card {
+  background: var(--paper); border: 1px solid var(--paper-border);
+  border-radius: 16px; padding: 24px; position: relative; overflow: hidden;
+  box-shadow: 0 4px 16px var(--paper-shadow);
+}
+.dash-card-accent {
+  position: absolute; top: 0; left: 0; right: 0; height: 3px; border-radius: 16px 16px 0 0;
+}
+.dash-card-icon { font-size: 2rem; margin-bottom: 10px; }
+.dash-card-test { font-size: 0.75rem; color: var(--text-tertiary); margin-bottom: 4px; letter-spacing: 0.05em; text-transform: uppercase; }
+.dash-card-result { font-size: 1.3rem; font-weight: 800; margin-bottom: 8px; }
+.dash-card-desc { font-size: 0.82rem; color: var(--text-secondary); line-height: 1.6; }
+
+.dash-narrative {
+  background: var(--paper); border: 1px solid var(--paper-border);
+  border-radius: 16px; padding: 32px; text-align: center;
+  box-shadow: 0 4px 16px var(--paper-shadow);
+}
+.dash-narrative h2 { font-size: 1.2rem; font-weight: 700; margin-bottom: 16px; color: var(--ink); }
+.dash-narrative p { color: var(--text-primary); line-height: 1.8; font-size: 0.95rem; }
+
+/* Confetti */
+.confetti-piece {
+  position: fixed; width: 10px; height: 10px; top: -20px;
+  animation: confettiFall linear forwards;
+  border-radius: 2px; pointer-events: none; z-index: 9999;
+}
+@keyframes confettiFall {
+  to { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+}
+
+/* Extra CSS for JS-generated question and result UI */
+.qw{animation:slideLeft .35s cubic-bezier(.175,.885,.32,1.275)}
+.qcard{background:var(--paper);border:1px solid var(--paper-border);border-radius:16px;padding:30px;margin-bottom:20px;position:relative;overflow:hidden;box-shadow:0 4px 16px var(--paper-shadow)}
+.qn{font-size:.76rem;color:var(--text-tertiary);margin-bottom:10px;letter-spacing:.06em;text-transform:uppercase}
+.qt{font-size:1.08rem;line-height:1.75;font-weight:500;color:var(--ink)}
+.obin{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.ob{background:var(--paper);border:1.5px solid var(--paper-border);border-radius:16px;padding:18px 16px;cursor:pointer;transition:all .25s cubic-bezier(.175,.885,.32,1.275);text-align:left;color:var(--text-primary);font-size:.88rem;line-height:1.55;box-shadow:0 2px 8px rgba(139,109,74,.06)}
+.ob .ol{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:8px;font-size:.72rem;font-weight:700;margin-bottom:10px}
+.ob:hover{transform:translateY(-4px);box-shadow:0 8px 24px rgba(139,109,74,.15)}
+.ob.sel{border-width:2px;transform:translateY(-2px)}
+.oquad{display:grid;gap:12px}
+.oq{background:var(--paper);border:1.5px solid var(--paper-border);border-radius:14px;padding:14px 18px;cursor:pointer;transition:all .25s cubic-bezier(.175,.885,.32,1.275);text-align:left;color:var(--text-primary);font-size:.87rem;line-height:1.6;display:flex;align-items:flex-start;gap:10px;box-shadow:0 2px 8px rgba(139,109,74,.06)}
+.oq:hover{transform:translateX(6px)}.oq.sel{border-width:2px;transform:translateX(3px)}
+.qtag{flex-shrink:0;width:26px;height:26px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:.74rem;font-weight:700}
+.ort{display:flex;gap:10px;align-items:flex-end;justify-content:center;padding:12px 0}
+.rl{display:flex;justify-content:space-between;font-size:.7rem;color:var(--text-tertiary);margin-top:6px;padding:0 4px}
+.rb{border:2px solid var(--paper-border);background:var(--paper);border-radius:50%;cursor:pointer;transition:all .25s cubic-bezier(.175,.885,.32,1.275);color:var(--text-primary);font-weight:700;font-size:.9rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 2px 8px rgba(139,109,74,.06)}
+.rb:nth-child(1){width:42px;height:42px}.rb:nth-child(2){width:48px;height:48px}.rb:nth-child(3){width:56px;height:56px}.rb:nth-child(4){width:48px;height:48px}.rb:nth-child(5){width:42px;height:42px}
+.rb:hover{transform:scale(1.2)}.rb.sel{border-width:3px;transform:scale(1.25)}
+.blr{display:flex;justify-content:space-between;margin-bottom:8px;font-size:.85rem;align-items:center}
+.btr{background:rgba(139,109,74,.08);border-radius:10px;height:12px;overflow:hidden}
+.bf{height:12px;border-radius:10px;transition:width 1s cubic-bezier(.4,0,.2,1);position:relative;overflow:hidden}
+.bf::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.35),transparent);animation:shimmer 2s linear infinite;background-size:200% 100%}
+@keyframes shimmer{0%{background-position:-200% center}100%{background-position:200% center}}
+.cok{position:absolute;top:12px;right:12px;font-size:.7rem;padding:3px 10px;border-radius:16px;background:rgba(123,174,142,.15);border:1px solid rgba(123,174,142,.4);color:#5B9E78}
+.cres{position:absolute;top:12px;right:12px;font-size:.7rem;padding:3px 10px;border-radius:16px;background:rgba(212,168,87,.15);border:1px solid rgba(212,168,87,.4);color:#B8903A}
+.bc{display:grid;gap:16px}
+.rb2{display:grid;gap:18px;margin-bottom:32px}
+.rs2{background:var(--paper);border:1px solid var(--paper-border);border-radius:16px;padding:26px;transition:transform .2s;animation:fadeInUp .5s ease both;box-shadow:0 4px 16px var(--paper-shadow)}
+.rs2:hover{transform:translateY(-2px)}
+.rs2 h3{font-size:.8rem;letter-spacing:.1em;color:var(--text-tertiary);margin-bottom:12px;text-transform:uppercase}
+.rs2 p{line-height:1.8;font-size:.94rem;color:var(--text-primary)}
+.rh{text-align:center;margin-bottom:40px}
+.re{font-size:5rem;display:block;margin-bottom:16px;animation:pop .6s ease}
+.rn{font-size:clamp(1.8rem,5vw,2.8rem);font-weight:800;letter-spacing:-.02em;margin-bottom:8px}
+.rsub{color:var(--text-secondary);font-size:1rem;margin-bottom:24px;line-height:1.6}
+.rtags{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.rtag{padding:5px 14px;border-radius:20px;font-size:.8rem;font-weight:500;background:var(--bg-warm);border:1px solid var(--paper-border);color:var(--text-secondary);transition:all .2s}
+.ra{display:flex;gap:14px;flex-wrap:wrap}
+.bp{flex:1;padding:15px;border-radius:50px;font-size:.95rem;font-weight:700;border:none;cursor:pointer;color:white;transition:all .3s;min-width:140px;font-family:-apple-system,BlinkMacSystemFont,sans-serif}
+.bp:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(139,109,74,.2)}
+.bs{flex:1;padding:15px;border-radius:50px;font-size:.95rem;font-weight:700;border:1px solid var(--paper-border);background:var(--paper);cursor:pointer;color:var(--text-primary);transition:all .25s;min-width:140px;box-shadow:0 2px 8px rgba(139,109,74,.08);font-family:-apple-system,BlinkMacSystemFont,sans-serif}
+.bs:hover{background:var(--bg-warm);transform:translateY(-2px)}
+.cfp{position:fixed;top:-20px;animation:confettiFall linear forwards;border-radius:2px;pointer-events:none;z-index:9999}
+
+/* Responsive */
+@media (max-width: 500px) {
+  .options-binary { grid-template-columns: 1fr; }
+  .options-rating { gap: 6px; }
+  .rate-btn:nth-child(3) { width: 44px; height: 44px; }
+  .result-actions { flex-direction: column; }
+}
+
+/* ====== GOOSE HOUSE ====== */
+.goose-grid {display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:18px;}
+.goose-card {background:var(--paper);border:1px solid var(--paper-border);border-radius:16px;padding:24px;position:relative;overflow:hidden;transition:transform .3s,box-shadow .3s;box-shadow:0 4px 16px var(--paper-shadow)}
+.goose-card.unlocked:hover {transform:translateY(-4px);box-shadow:0 12px 32px rgba(139,109,74,.18);}
+.goose-card-glow {position:absolute;top:0;left:0;right:0;height:3px;border-radius:16px 16px 0 0;opacity:0;transition:opacity .3s;}
+.goose-card.unlocked .goose-card-glow {opacity:1;}
+.goose-emoji {font-size:3rem;margin-bottom:10px;display:block;text-align:center;transition:transform .3s;}
+.goose-card.unlocked:hover .goose-emoji {transform:scale(1.15) rotate(-5deg);}
+.goose-card.locked .goose-emoji {filter:grayscale(1) brightness(0.6);font-size:2.4rem;}
+.goose-name {font-size:1.1rem;font-weight:700;text-align:center;margin-bottom:4px;}
+.goose-test {font-size:.72rem;color:var(--text-tertiary);text-align:center;margin-bottom:8px;letter-spacing:.04em;}
+.goose-result {font-size:.88rem;font-weight:600;text-align:center;margin-bottom:10px;}
+.goose-desc {font-size:.82rem;color:var(--text-secondary);line-height:1.7;}
+.goose-locked-hint {font-size:.82rem;color:var(--text-tertiary);text-align:center;font-style:italic;}
+.goose-ultimate-inner {transition:border-color .5s;}
+.goose-ultimate.revealed .goose-ultimate-inner {box-shadow:0 0 30px rgba(212,168,87,.2);}
+@keyframes gooseFloat {0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.goose-result-preview {animation:fadeInUp .5s ease .3s both;background:var(--paper);border:1px solid var(--paper-border);border-radius:16px;box-shadow:0 4px 16px var(--paper-shadow)}
+
+/* ====== GOOSE SCENE CARDS ====== */
+.scene-card {
+  position:relative; border-radius:16px; overflow:hidden; min-height:380px;
+  cursor:pointer; transition:transform .4s,box-shadow .4s;
+  background:var(--paper); border:1px solid var(--paper-border);
+}
+.scene-card:hover {transform:translateY(-8px) scale(1.02);box-shadow:0 16px 40px rgba(139,109,74,.2);}
+.scene-bg {position:absolute;inset:0;z-index:0;opacity:.5;}
+.scene-bg::after {
+  content:'';position:absolute;bottom:0;left:0;right:0;height:50%;
+  background:linear-gradient(to top,rgba(253,246,236,.85),transparent);
+}
+.scene-goose-wrap {
+  position:absolute;bottom:15%;left:50%;transform:translateX(-50%);z-index:2;
+  filter:drop-shadow(0 4px 12px rgba(139,109,74,.2));
+  animation:gooseBob 3s ease-in-out infinite;
+}
+@keyframes gooseBob {
+  0%,100%{transform:translateX(-50%) translateY(0)}
+  50%{transform:translateX(-50%) translateY(-12px)}
+}
+.scene-content {
+  position:relative;z-index:3;padding:20px;
+  display:flex;flex-direction:column;align-items:center;justify-content:flex-end;
+  min-height:100%;text-align:center;
+}
+.scene-name {
+  font-size:1.15rem;font-weight:800;margin-bottom:4px;
+  text-shadow:0 1px 6px rgba(255,255,255,.8);letter-spacing:.02em;
+}
+.scene-result-text {
+  font-size:.85rem;font-weight:600;margin-bottom:6px;
+  text-shadow:0 1px 4px rgba(255,255,255,.6);max-width:200px;
+}
+.scene-desc-text {
+  font-size:.72rem;color:rgba(61,44,30,.65);line-height:1.6;
+  text-shadow:0 1px 3px rgba(255,255,255,.5);max-width:220px;
+}
+.scene-actions {margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;justify-content:center;}
+.scene-btn {
+  padding:6px 14px;border-radius:20px;font-size:.75rem;font-weight:600;
+  border:none;cursor:pointer;transition:all .2s;backdrop-filter:blur(10px);
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+}
+
+/* Scene backgrounds - warm watercolor */
+.scene-puzzle {background:linear-gradient(180deg,#EDE4F5 0%,#D8CCF0 40%,#C4B5E8 100%);}
+.scene-pink {background:linear-gradient(180deg,#FBE4E8 0%,#F5D0D8 40%,#EDBCC8 100%);}
+.scene-crystal {background:linear-gradient(180deg,#E0E8F0 0%,#C8D8EA 40%,#B0C8E0 100%);}
+.scene-ocean {background:linear-gradient(180deg,#DCEDE8 0%,#C0E0D8 40%,#A8D4CA 100%);}
+.scene-forest {background:linear-gradient(180deg,#E2EDD8 0%,#D0E4C4 40%,#BCDAC0 100%);}
+.scene-postoffice {background:linear-gradient(180deg,#F0E0D8 0%,#E8D0C4 40%,#DEC0B0 100%);}
+.scene-office {background:linear-gradient(180deg,#DDE8F0 0%,#C8D8E8 40%,#B4C8E0 100%);}
+.scene-mountain {background:linear-gradient(180deg,#EBF0DC 0%,#DCE8C8 40%,#CCDDB8 100%);}
+.scene-temple {background:linear-gradient(180deg,#FDF2D8 0%,#F8E8BC 40%,#F0D8A0 100%);}
+
+/* Floating scene elements */
+.float-el {
+  position:absolute;z-index:1;pointer-events:none;opacity:.45;
+  animation:floatDrift linear infinite;
+}
+@keyframes floatDrift {
+  0%{transform:translateY(0) rotate(0deg) scale(1)}
+  25%{transform:translateY(-18px) rotate(5deg) scale(1.1)}
+  50%{transform:translateY(-8px) rotate(-3deg) scale(.95)}
+  75%{transform:translateY(-22px) rotate(3deg) scale(1.05)}
+  100%{transform:translateY(0) rotate(0deg) scale(1)}
+}
+
+/* Scene sparkle effects */
+.sparkle {
+  position:absolute;width:4px;height:4px;border-radius:50%;
+  background:rgba(212,168,87,0.7);pointer-events:none;z-index:1;
+  animation:sparkle 2s ease-in-out infinite;
+}
+@keyframes sparkle {
+  0%,100%{opacity:0;transform:scale(0)}
+  50%{opacity:1;transform:scale(1)}
+}
+
+/* Wave effect for ocean scene */
+.wave-line {
+  position:absolute;bottom:0;left:-10%;width:120%;height:40px;z-index:1;
+  background:repeating-linear-gradient(90deg,transparent,transparent 30px,rgba(123,174,142,.12) 30px,rgba(123,174,142,.12) 32px);
+  animation:waveMove 3s linear infinite;border-radius:50% 50% 0 0;
+}
+@keyframes waveMove {
+  0%{transform:translateX(0)}100%{transform:translateX(60px)}
+}
+
+/* Lock overlay */
+.scene-locked {
+  position:absolute;inset:0;background:rgba(253,246,236,.88);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  z-index:5;border-radius:16px;backdrop-filter:blur(4px);
+}
+.scene-locked .lock-icon {font-size:3rem;margin-bottom:12px;animation:gooseFloat 3s ease-in-out infinite;}
+.scene-locked .lock-name {font-size:1rem;font-weight:700;color:var(--text-secondary);margin-bottom:4px;}
+.scene-locked .lock-hint {font-size:.78rem;color:var(--text-tertiary);}
+
+/* ====== UNLOCK POPUP MODAL ====== */
+.modal-overlay {
+  position:fixed;inset:0;background:rgba(253,246,236,.85);z-index:10000;
+  display:flex;align-items:center;justify-content:center;
+  animation:modalFadeIn .3s ease;backdrop-filter:blur(8px);
+}
+@keyframes modalFadeIn {from{opacity:0}to{opacity:1}}
+.unlock-card {
+  background:var(--paper);border:1px solid var(--paper-border);
+  border-radius:20px;padding:40px 32px;text-align:center;
+  max-width:400px;width:90%;animation:unlockPop .6s cubic-bezier(.175,.885,.32,1.275);
+  position:relative;overflow:hidden;
+  box-shadow:0 16px 48px rgba(139,109,74,.2);
+}
+@keyframes unlockPop {
+  0%{transform:scale(.3) rotate(-10deg);opacity:0}
+  50%{transform:scale(1.08) rotate(2deg)}
+  100%{transform:scale(1) rotate(0);opacity:1}
+}
+.unlock-card::before {
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(circle at 50% 30%,var(--glow-color,rgba(212,168,87,.1)) 0%,transparent 70%);
+}
+.unlock-goose-art {
+  width:180px;height:200px;margin:0 auto 20px;
+  animation:gooseBob 2s ease-in-out infinite;
+  filter:drop-shadow(0 4px 12px rgba(139,109,74,.15));
+}
+.unlock-title {font-size:1.5rem;font-weight:800;margin-bottom:8px;color:var(--ink);}
+.unlock-subtitle {font-size:.95rem;color:var(--text-secondary);margin-bottom:16px;line-height:1.7;}
+.unlock-tag {
+  display:inline-block;padding:4px 16px;border-radius:20px;font-size:.78rem;font-weight:600;
+  margin-bottom:20px;
+}
+.unlock-close-btn {
+  padding:12px 36px;border-radius:50px;font-size:.95rem;font-weight:700;
+  border:none;cursor:pointer;color:white;transition:all .3s;
+  position:relative;z-index:1;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+}
+.unlock-confetti {position:absolute;inset:0;pointer-events:none;overflow:hidden;border-radius:20px;}
+.uc-particle {
+  position:absolute;border-radius:2px;animation:ucFall linear forwards;
+}
+@keyframes ucFall {
+  0%{transform:translateY(-20px) rotate(0);opacity:1}
+  100%{transform:translateY(400px) rotate(720deg);opacity:0}
+}
+
+/* ====== REVIEW PANEL ====== */
+.review-overlay {
+  position:fixed;inset:0;background:rgba(253,246,236,.97);z-index:10000;
+  overflow-y:auto;animation:modalFadeIn .3s ease;
+}
+.review-panel {max-width:700px;margin:0 auto;padding:40px 20px 80px;}
+.review-header {text-align:center;margin-bottom:32px;}
+.review-header h2 {font-size:1.5rem;font-weight:800;margin-bottom:8px;}
+.review-header p {color:var(--text-secondary);font-size:.9rem;}
+.review-item {
+  background:var(--paper);border:1px solid var(--paper-border);
+  border-radius:14px;padding:20px;margin-bottom:14px;
+  animation:fadeInUp .4s ease both;
+  box-shadow:0 2px 8px var(--paper-shadow);
+}
+.review-q-num {font-size:.72rem;color:var(--text-tertiary);letter-spacing:.06em;margin-bottom:6px;}
+.review-q-text {font-size:.95rem;font-weight:600;line-height:1.7;margin-bottom:10px;}
+.review-a-box {
+  padding:10px 14px;background:var(--bg-warm);
+  border-radius:10px;border-left:3px solid var(--text-tertiary);
+}
+.review-a-label {font-size:.75rem;color:var(--text-tertiary);margin-bottom:4px;}
+.review-a-text {font-size:.88rem;font-weight:600;}
+.review-close-bar {
+  position:sticky;top:0;z-index:2;padding:14px 0;
+  background:rgba(253,246,236,.95);backdrop-filter:blur(10px);
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:20px;border-radius:0 0 12px 12px;
+}
+.review-close-bar button {
+  padding:8px 20px;border-radius:20px;font-size:.85rem;font-weight:600;
+  border:1px solid var(--paper-border);background:var(--paper);
+  color:var(--text-primary);cursor:pointer;transition:all .2s;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+}
+.review-close-bar button:hover {background:var(--bg-warm);}
+.review-stats {
+  display:flex;gap:20px;justify-content:center;margin-bottom:24px;flex-wrap:wrap;
+}
+.review-stat {
+  background:var(--paper);border:1px solid var(--paper-border);
+  border-radius:12px;padding:12px 20px;text-align:center;min-width:100px;
+  box-shadow:0 2px 8px var(--paper-shadow);
+}
+.review-stat-val {font-size:1.3rem;font-weight:800;}
+.review-stat-label {font-size:.72rem;color:var(--text-tertiary);margin-top:2px;}
+</style>
+</head>
+<body>
+<canvas id="pc" style="position:fixed;inset:0;z-index:0;pointer-events:none;"></canvas>
+<div id="app">
+  <!-- HOME -->
+  <div id="home" class="screen active">
+    <div class="home-hero">
+      <h1>画一卷关于你的绘本</h1>
+      <p>八维人格测试 · 随机抽题 · 断点续答<br>像翻阅手绘画册一样，慢慢认识自己</p>
+      <div class="badge-row">
+        <span class="badge">🧩 MBTI</span>
+        <span class="badge">💞 依恋类型</span>
+        <span class="badge">🌀 九型人格</span>
+        <span class="badge">🌊 大五人格</span>
+        <span class="badge">🐾 动物图腾</span>
+        <span class="badge">❤️ 爱的语言</span>
+        <span class="badge">💼 DISC</span>
+        <span class="badge">🧭 霍兰德职业</span>
+      </div>
+    </div>
+    <div class="test-grid">
+      <div class="test-card" data-test="mbti" onclick="startTest('mbti')">
+        <span class="card-icon">🧩</span>
+        <div class="card-title">MBTI 16型人格</div>
+        <div class="card-desc">基于荣格理论，通过4个维度揭示你的思维方式与行为偏好，得出16种人格类型之一</div>
+        <div class="card-meta">
+          <span class="card-time">⏱ 约8分钟 · 32题</span>
+          <button class="card-btn">开始测试</button>
+        </div>
+      </div>
+      <div class="test-card" data-test="attachment" onclick="startTest('attachment')">
+        <span class="card-icon">💞</span>
+        <div class="card-title">依恋类型测试</div>
+        <div class="card-desc">探索你在亲密关系中的情感模式——安全型、焦虑型、回避型还是混乱型？</div>
+        <div class="card-meta">
+          <span class="card-time">⏱ 约5分钟 · 20题</span>
+          <button class="card-btn">开始测试</button>
+        </div>
+      </div>
+      <div class="test-card" data-test="enneagram" onclick="startTest('enneagram')">
+        <span class="card-icon">🌀</span>
+        <div class="card-title">九型人格测试</div>
+        <div class="card-desc">从9种原型人格中找到你的核心驱动力，了解你深层的动机与恐惧</div>
+        <div class="card-meta">
+          <span class="card-time">⏱ 约7分钟 · 27题</span>
+          <button class="card-btn">开始测试</button>
+        </div>
+      </div>
+      <div class="test-card" data-test="bigfive" onclick="startTest('bigfive')">
+        <span class="card-icon">🌊</span>
+        <div class="card-title">大五人格测试</div>
+        <div class="card-desc">心理学界公认最科学的人格模型，从开放性、尽责性等5维度量化你的人格特质</div>
+        <div class="card-meta">
+          <span class="card-time">⏱ 约8分钟 · 30题</span>
+          <button class="card-btn">开始测试</button>
+        </div>
+      </div>
+      <div class="test-card" data-test="animal" onclick="startTest('animal')">
+        <span class="card-icon">🐾</span>
+        <div class="card-title">动物图腾测试</div>
+        <div class="card-desc">独家升级版 · 8种动物图腾全面匹配——狮子、猫、狼、海豚、鹰、鹿、狐狸、猫头鹰，你是哪种灵魂动物？附带性格特质分析和成长建议</div>
+        <div class="card-meta">
+          <span class="card-time">⏱ 约6分钟 · 随机18题</span>
+          <button class="card-btn">开始测试</button>
+        </div>
+      </div>
+      <div class="test-card" data-test="love" onclick="startTest('love')">
+        <span class="card-icon">❤️</span>
+        <div class="card-title">爱的语言测试</div>
+        <div class="card-desc">Gary Chapman经典理论 · 找出你最深的爱的表达方式——肯定的言语、精心时刻、服务的行动还是身体接触？</div>
+        <div class="card-meta">
+          <span class="card-time">⏱ 约5分钟 · 随机18题</span>
+          <button class="card-btn">开始测试</button>
+        </div>
+      </div>
+      <div class="test-card" data-test="disc" onclick="startTest('disc')">
+        <span class="card-icon">💼</span>
+        <div class="card-title">DISC行为风格测试</div>
+        <div class="card-desc">职场经典行为模型 · 发现你的主导行为风格——支配型、影响型、稳健型还是谨慎型？</div>
+        <div class="card-meta">
+          <span class="card-time">⏱ 约6分钟 · 随机20题</span>
+          <button class="card-btn">开始测试</button>
+        </div>
+      </div>
+      <div class="test-card" data-test="holland" onclick="startTest('holland')">
+        <span class="card-icon">🧭</span>
+        <div class="card-title">霍兰德职业测试</div>
+        <div class="card-desc">RIASEC经典模型 · 探索你的职业人格类型——现实型、研究型、艺术型、社会型、企业型还是常规型？</div>
+        <div class="card-meta">
+          <span class="card-time">⏱ 约7分钟 · 随机24题</span>
+          <button class="card-btn">开始测试</button>
+        </div>
+      </div>
+    </div>
+    <div class="dashboard-btn-wrap">
+      <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap">
+        <button class="dashboard-btn" id="dashBtn" onclick="showDashboard()" disabled>
+          ✨ 查看我的人格综合画像
+        </button>
+        <button class="dashboard-btn" onclick="showGooseHouse()" style="background:linear-gradient(135deg, #C4836A, #7BAE8E);box-shadow:0 4px 30px rgba(196,131,106,.3);">
+          🪿 我的鹅舍
+        </button>
+      </div>
+      <p style="margin-top:12px;font-size:0.82rem;color:var(--text-secondary);" id="dashHint">完成至少 3 项测试后解锁综合画像</p>
+    </div>
+  </div>
+
+  <!-- TEST SCREEN -->
+  <div id="test-screen" class="screen">
+    <div class="test-header">
+      <button class="back-btn" onclick="goHome()">← 返回</button>
+      <div class="test-header-info">
+        <div class="test-name" id="testName">-</div>
+        <div class="progress-bar-wrap">
+          <div class="progress-bar" id="progressBar" style="width:0%"></div>
+        </div>
+        <div class="q-counter" id="qCounter">0 / 0</div>
+      </div>
+    </div>
+    <div id="questionArea"></div>
+  </div>
+
+  <!-- RESULT SCREEN -->
+  <div id="result-screen" class="screen">
+    <div id="resultContent"></div>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div id="dashboard-screen" class="screen">
+    <div class="dash-hero">
+      <h1>🌿 你的人格综合画像</h1>
+      <p>基于多项测试的综合分析 · 认识一个更完整的自己</p>
+    </div>
+    <div class="dash-grid" id="dashCards"></div>
+    <div class="dash-narrative" id="dashNarrative"></div>
+    <div style="text-align:center;margin-top:30px;">
+      <button class="btn-secondary" onclick="goHome()" style="display:inline-block;width:auto;padding:12px 32px;">← 返回首页</button>
+    </div>
+  </div>
+
+  <!-- GOOSE HOUSE -->
+  <div id="goose-screen" class="screen">
+    <div style="max-width:860px;margin:0 auto;padding:40px 20px 80px;" id="gooseContent"></div>
+  </div>
+
+  <!-- UNLOCK POPUP MODAL -->
+  <div id="unlockModal" class="modal-overlay" style="display:none" onclick="closeUnlockModal(event)"></div>
+
+  <!-- REVIEW PANEL -->
+  <div id="reviewPanel" class="review-overlay" style="display:none"></div>
+</div>
+
+<script>
+// ============================================================
+// STATE
+// ============================================================
+const state = {
+  currentTest: null,
+  currentQ: 0,
+  testSession: null, // {testId, questions:[], answers:{}}
+  results: {}
+};
+
+// ============================================================
+// QUESTION BANKS (embedded by Python)
+// ============================================================
+const BANKS = {
+  mbti: [{"q": "在大型聚会上，你通常会？", "t": "bin", "opts": [{"l": "主动与陌生人攀谈", "d": "EI", "s": 1}, {"l": "找一个安静的角落待着", "d": "EI", "s": 0}]}, {"q": "周末你更倾向于？", "t": "bin", "opts": [{"l": "约朋友出门活动", "d": "EI", "s": 1}, {"l": "在家独处充电", "d": "EI", "s": 0}]}, {"q": "在团队讨论中，你通常？", "t": "bin", "opts": [{"l": "积极发言分享想法", "d": "EI", "s": 1}, {"l": "先听完再思考后表达", "d": "EI", "s": 0}]}, {"q": "长时间独处后你感觉？", "t": "bin", "opts": [{"l": "有点闷，想找人聊天", "d": "EI", "s": 1}, {"l": "很舒适，不想被打扰", "d": "EI", "s": 0}]}, {"q": "你更喜欢的沟通方式是？", "t": "bin", "opts": [{"l": "面对面或电话直接交流", "d": "EI", "s": 1}, {"l": "发文字消息慢慢组织语言", "d": "EI", "s": 0}]}, {"q": "认识新朋友时你？", "t": "bin", "opts": [{"l": "很快就能打成一片", "d": "EI", "s": 1}, {"l": "需要较长时间才放下戒备", "d": "EI", "s": 0}]}, {"q": "你的社交圈通常是？", "t": "bin", "opts": [{"l": "广泛但不太深入", "d": "EI", "s": 1}, {"l": "小而精的密友圈", "d": "EI", "s": 0}]}, {"q": "面对一个新环境，你倾向于？", "t": "bin", "opts": [{"l": "迅速融入主动社交", "d": "EI", "s": 1}, {"l": "默默观察适应节奏", "d": "EI", "s": 0}]}, {"q": "工作时你更喜欢？", "t": "bin", "opts": [{"l": "开放式协作空间", "d": "EI", "s": 1}, {"l": "独立的安静空间", "d": "EI", "s": 0}]}, {"q": "你获取能量的方式是？", "t": "bin", "opts": [{"l": "与人互动让我充满活力", "d": "EI", "s": 1}, {"l": "独处让我恢复能量", "d": "EI", "s": 0}]}, {"q": "你更关注的是？", "t": "bin", "opts": [{"l": "具体的现实和细节", "d": "SN", "s": 0}, {"l": "抽象的概念和可能性", "d": "SN", "s": 1}]}, {"q": "学习新事物时你更偏好？", "t": "bin", "opts": [{"l": "从具体案例和实操入手", "d": "SN", "s": 0}, {"l": "先理解整体框架和理论", "d": "SN", "s": 1}]}, {"q": "你描述一件事时倾向于？", "t": "bin", "opts": [{"l": "按事实顺序精确叙述", "d": "SN", "s": 0}, {"l": "用比喻和联想来表达", "d": "SN", "s": 1}]}, {"q": "你更信任的信息来源是？", "t": "bin", "opts": [{"l": "亲身经历和可验证的数据", "d": "SN", "s": 0}, {"l": "直觉感受和内在灵感", "d": "SN", "s": 1}]}, {"q": "面对一个问题，你首先？", "t": "bin", "opts": [{"l": "收集已知事实再分析", "d": "SN", "s": 0}, {"l": "直觉跳跃到可能的答案", "d": "SN", "s": 1}]}, {"q": "你更喜欢阅读什么内容？", "t": "bin", "opts": [{"l": "实用指南和操作手册", "d": "SN", "s": 0}, {"l": "哲学探讨和科幻小说", "d": "SN", "s": 1}]}, {"q": "你对未来的看法倾向于？", "t": "bin", "opts": [{"l": "根据当前趋势做出合理预测", "d": "SN", "s": 0}, {"l": "天马行空地想象各种可能", "d": "SN", "s": 1}]}, {"q": "在日常生活中你更注意？", "t": "bin", "opts": [{"l": "当下的具体感受和细节", "d": "SN", "s": 0}, {"l": "事物背后的深层含义", "d": "SN", "s": 1}]}, {"q": "做饭时你更可能？", "t": "bin", "opts": [{"l": "严格按照菜谱步骤来", "d": "SN", "s": 0}, {"l": "凭感觉自由发挥搭配", "d": "SN", "s": 1}]}, {"q": "你如何评价一部电影？", "t": "bin", "opts": [{"l": "关注剧情逻辑和画面细节", "d": "SN", "s": 0}, {"l": "关注主题思想和情感隐喻", "d": "SN", "s": 1}]}, {"q": "做重要决定时你更依赖？", "t": "bin", "opts": [{"l": "逻辑分析和客观利弊", "d": "TF", "s": 0}, {"l": "内心感受和对他人的影响", "d": "TF", "s": 1}]}, {"q": "朋友向你倾诉烦恼，你首先？", "t": "bin", "opts": [{"l": "帮忙理性分析解决方案", "d": "TF", "s": 0}, {"l": "先表示理解和共情", "d": "TF", "s": 1}]}, {"q": "面对不公平的规则你会？", "t": "bin", "opts": [{"l": "据理力争指出不合理之处", "d": "TF", "s": 0}, {"l": "考虑各方感受寻求折中方案", "d": "TF", "s": 1}]}, {"q": "你觉得更重要的是？", "t": "bin", "opts": [{"l": "真相和公正", "d": "TF", "s": 0}, {"l": "和谐与善意", "d": "TF", "s": 1}]}, {"q": "在团队中遇到分歧你倾向？", "t": "bin", "opts": [{"l": "用逻辑说服对方", "d": "TF", "s": 0}, {"l": "寻求双方都能接受的方案", "d": "TF", "s": 1}]}, {"q": "批评别人时你更注意？", "t": "bin", "opts": [{"l": "直接指出问题所在", "d": "TF", "s": 0}, {"l": "顾及对方感受用委婉方式", "d": "TF", "s": 1}]}, {"q": "你认为好的领导者应该？", "t": "bin", "opts": [{"l": "制定清晰规则高效执行", "d": "TF", "s": 0}, {"l": "关心团队氛围凝聚人心", "d": "TF", "s": 1}]}, {"q": "看到有人在网上发表错误观点你？", "t": "bin", "opts": [{"l": "忍不住想要纠正", "d": "TF", "s": 0}, {"l": "尊重对方有不同看法", "d": "TF", "s": 1}]}, {"q": "你更看重别人对你的评价？", "t": "bin", "opts": [{"l": "有能力、有逻辑", "d": "TF", "s": 0}, {"l": "善良、体贴", "d": "TF", "s": 1}]}, {"q": "选择礼物时你更注重？", "t": "bin", "opts": [{"l": "实用性和对方真正需要的", "d": "TF", "s": 0}, {"l": "心意和能给对方带来惊喜", "d": "TF", "s": 1}]}, {"q": "你的工作和生活状态更接近？", "t": "bin", "opts": [{"l": "提前计划严格按日程执行", "d": "JP", "s": 0}, {"l": "灵活应对随性而为", "d": "JP", "s": 1}]}, {"q": "旅行时你更偏好？", "t": "bin", "opts": [{"l": "详细规划好每天的行程", "d": "JP", "s": 0}, {"l": "到了目的地再随机探索", "d": "JP", "s": 1}]}, {"q": "你的桌面/房间通常？", "t": "bin", "opts": [{"l": "整洁有序东西各有归处", "d": "JP", "s": 0}, {"l": "有些乱但我知道东西在哪", "d": "JP", "s": 1}]}, {"q": "面对截止日期你通常？", "t": "bin", "opts": [{"l": "提前完成留有余量", "d": "JP", "s": 0}, {"l": "在最后期限前才爆发效率", "d": "JP", "s": 1}]}, {"q": "你更喜欢什么样的工作方式？", "t": "bin", "opts": [{"l": "有明确目标和步骤指引", "d": "JP", "s": 0}, {"l": "自由灵活自己决定节奏", "d": "JP", "s": 1}]}, {"q": "做决策时你倾向于？", "t": "bin", "opts": [{"l": "尽快决定不喜欢拖泥带水", "d": "JP", "s": 0}, {"l": "保持开放多看看其他选项", "d": "JP", "s": 1}]}, {"q": "你的购物习惯更接近？", "t": "bin", "opts": [{"l": "有明确清单按计划购买", "d": "JP", "s": 0}, {"l": "逛逛看有什么感兴趣的就买", "d": "JP", "s": 1}]}, {"q": "对于规则你的态度是？", "t": "bin", "opts": [{"l": "规则存在就有道理应该遵守", "d": "JP", "s": 0}, {"l": "规则是参考必要时可以灵活变通", "d": "JP", "s": 1}]}, {"q": "早晨起来你的状态更像？", "t": "bin", "opts": [{"l": "按照既定计划开始新一天", "d": "JP", "s": 0}, {"l": "看心情和状态决定先做什么", "d": "JP", "s": 1}]}, {"q": "你更享受的状态是？", "t": "bin", "opts": [{"l": "事情都安排妥当一切尽在掌控", "d": "JP", "s": 0}, {"l": "充满可能性和意外的惊喜", "d": "JP", "s": 1}]}],
+  attachment: [{"q": "当伴侣没有及时回复消息时，你会？", "opts": ["感到不安和焦虑，反复查看手机", "觉得无所谓，该忙就忙", "心里有点不舒服但不会表现出来", "既焦虑又生气，可能会发一连串消息"]}, {"q": "在亲密关系中，你更担心？", "opts": ["对方不够爱我", "失去自己的独立性", "不知道，似乎都还好", "被抛弃同时又被控制"]}, {"q": "当你需要情感支持时，你通常？", "opts": ["直接告诉伴侣我的需求", "先自己消化不太愿开口", "等对方自己察觉", "情绪爆发让事情变得更糟"]}, {"q": "伴侣提出需要一些个人空间时，你觉得？", "opts": ["有点受伤但不阻止", "完全理解和支持", "表面理解内心有些失落", "感到恐慌觉得要被抛弃"]}, {"q": "争吵后你更可能？", "opts": ["主动求和希望尽快解决", "冷静后理性沟通", "给双方时间各自消化", "情绪极端波动反复无常"]}, {"q": "你对恋爱关系中的承诺看法是？", "opts": ["越快确定越好让我安心", "慢慢来不急于定义关系", "顺其自然不强求", "既渴望又害怕被束缚"]}, {"q": "伴侣和朋友聚会没有叫你，你会？", "opts": ["有些失落会询问原因", "觉得挺好各有各的空间", "稍有不安但不会说出口", "非常生气觉得不被重视"]}, {"q": "你理想中的亲密关系距离是？", "opts": ["尽可能亲密无间", "保持一定独立空间", "找到一个舒适的平衡", "矛盾——想亲密又害怕太近"]}, {"q": "当伴侣表现出情绪低落时，你会？", "opts": ["非常紧张立刻想要帮忙", "给对方空间相信能自行调节", "默默陪伴在旁", "自己也变得焦虑不安"]}, {"q": "过去的关系中你更常被说？", "opts": ["太黏人了", "太冷漠了", "让人捉摸不透", "情绪太不稳定"]}, {"q": "如果伴侣突然说'我们需要谈谈'，你的第一反应是？", "opts": ["紧张担心自己做错了什么", "冷静听听想说什么", "稍有不安但保持镇定", "极度焦虑大脑开始疯狂运转"]}, {"q": "你在关系中表达爱的方式更偏向？", "opts": ["频繁的语言和肢体表达", "用行动默默付出", "间接地通过小事表达", "有时候过于强烈让对方有压力"]}, {"q": "分手后你通常的反应是？", "opts": ["反复回想试图挽回", "虽然难过但能接受现实", "花很长时间慢慢走出来", "情绪崩溃很难自我恢复"]}, {"q": "你觉得信任在关系中？", "opts": ["需要不断被确认", "很重要但不应过度依赖", "自然而然存在就好", "很难建立也很容易崩塌"]}, {"q": "伴侣称赞别的异性时你？", "opts": ["有些吃醋但努力理性看待", "完全不在意", "内心微泛波澜", "强烈嫉妒甚至因此争吵"]}, {"q": "你更害怕的关系状态是？", "opts": ["不被需要和被遗忘", "被过度控制失去自由", "平淡无味缺乏激情", "既被控制又无法建立深层连接"]}, {"q": "晚上入睡前你更可能？", "opts": ["希望伴侣说晚安确认在意", "各自安好互不打扰", "偶尔说说也行", "反复确认对方是否还爱自己"]}, {"q": "当关系遇到困难时你的策略是？", "opts": ["全力以赴去修复", "理性评估是否值得继续", "隐忍退让维持表面和谐", "在极端情绪中反复拉扯"]}, {"q": "你如何看待'灵魂伴侣'这个概念？", "opts": ["深信不疑一直在寻找", "觉得过于理想化不现实", "浪漫但不确定是否存在", "既渴望又觉得不可能属于自己"]}, {"q": "伴侣忙于工作忽略你一周了，你会？", "opts": ["主动沟通表达需要关注", "理解工作忙自己找事做", "默默等待不主动打扰", "用发脾气或冷战引起注意"]}],
+  enneagram: [{"q": "你最核心的恐惧是什么？", "d": ["1", "2", "3", "4", "5", "6", "7", "8", "9"], "opts": ["犯错和被批评", "不被爱和不被需要", "失败和没有成就", "普通和平庸", "无法应对世界", "不确定和不安全", "被困住和失去自由", "被控制和被伤害", "冲突和失去连接"]}, {"q": "你最渴望的是？", "d": ["1", "2", "3", "4", "5", "6", "7", "8", "9"], "opts": ["完美和正确", "爱和归属感", "成就和认可", "独特性和自我表达", "知识和理解", "安全和支持", "自由和快乐", "力量和保护", "和平与和谐"]}, {"q": "在压力下你最可能？", "d": ["1", "2", "3", "4", "5", "6", "7", "8", "9"], "opts": ["变得更加挑剔和批评", "变得依赖和操纵", "变得冷漠和工作狂", "变得嫉妒和退缩", "变得孤僻和偏执", "变得焦虑和怀疑", "变得分散和冲动", "变得攻击和控制", "变得固执和麻木"]}, {"q": "朋友最常用来形容你的词是？", "d": ["1", "2", "3", "4", "5", "6", "7", "8", "9"], "opts": ["认真严谨", "温暖体贴", "高效能干", "创意独特", "深沉内省", "忠诚可靠", "开朗有趣", "果断有力", "温和包容"]}, {"q": "面对一个新项目你的第一反应是？", "d": ["1", "2", "3", "4", "5", "6", "7", "8", "9"], "opts": ["制定完美计划注重细节", "思考团队如何协作", "设定目标全力以赴", "想如何做出独特的东西", "先深入研究理解全貌", "预判可能的风险和问题", "兴奋地想着各种创新可能", "掌控全局直接推进", "维持现状避免不必要变化"]}, {"q": "你与他人相处时最常出现的困扰是？", "d": ["1", "2", "3", "4", "5", "6", "7", "8", "9"], "opts": ["别人觉得我太严格", "我觉得付出没得到回报", "别人跟不上我的节奏", "别人不理解我的感受", "我觉得社交消耗太大", "我总是担心别人怎么看我", "我很难对一件事持续专注", "别人觉得我太强势", "我很难表达自己的需求"]}, {"q": "你最欣赏的品质是？", "d": ["1", "2", "3", "4", "5", "6", "7", "8", "9"], "opts": ["正直和诚信", "同理心和善良", "效率和卓越", "真实和创造力", "智慧和洞察力", "勇气和忠诚", "乐观和自由", "正义和力量", "包容和平和"]}, {"q": "空闲时间你最享受？", "d": ["1", "2", "3", "4", "5", "6", "7", "8", "9"], "opts": ["整理和优化生活中的细节", "和朋友家人温馨相聚", "追求一个有挑战性的目标", "沉浸在艺术或创意活动中", "阅读思考或独自探索", "和信任的人一起做安全的事", "尝试新体验新冒险", "锻炼或参与竞技活动", "在大自然中安静地冥想"]}, {"q": "你的自我认知最接近？", "d": ["1", "2", "3", "4", "5", "6", "7", "8", "9"], "opts": ["我是一个有原则的人", "我是一个有爱心的人", "我是一个有能力的人", "我是一个与众不同的人", "我是一个思考者", "我是一个可靠的人", "我是一个充满热情的人", "我是一个坚强的人", "我是一个随和的人"]}, {"q": "当事情不如预期时你倾向于？", "d": ["1", "2", "3", "4", "5", "6", "7", "8", "9"], "opts": ["自我批评觉得自己不够好", "觉得是别人不理解自己", "加倍努力证明自己的能力", "陷入情绪感到世界不公", "退回到内心世界思考原因", "变得焦虑开始反复确认", "转向其他有趣的事分散注意力", "采取强硬手段改变局面", "压抑情绪假装一切都好"]}, {"q": "你最无法忍受的是？", "d": ["1", "2", "3", "4", "5", "6", "7", "8", "9"], "opts": ["混乱和低效", "冷漠和疏远", "平庸和无能", "约束和常规", "意外和被打扰", "背叛和不可预测", "无聊和重复", "软弱和被控制", "冲突和对立"]}, {"q": "在表达情感时你倾向于？", "d": ["1", "2", "3", "4", "5", "6", "7", "8", "9"], "opts": ["克制理性不太表露", "热情洋溢充分表达", "通过行动而非语言", "深沉而富有戏剧性", "含蓄内敛深藏不露", "对亲近的人才会表达", "夸张幽默不拘小节", "直接有力不加掩饰", "温和低调避免冲突"]}, {"q": "你最希望自己能改善的方面是？", "d": ["1", "2", "3", "4", "5", "6", "7", "8", "9"], "opts": ["不要对自己和他人太苛刻", "学会独立不依赖他人认可", "放慢脚步享受过程", "减少情绪波动更稳定", "不要过度思考多行动", "减少焦虑多信任", "提高专注力和持久性", "控制愤怒学会柔软", "学会表达不满而不压抑"]}, {"q": "你认为人生最重要的是？", "d": ["1", "2", "3", "4", "5", "6", "7", "8", "9"], "opts": ["做正确的事", "爱和被爱", "留下有意义的成就", "找到真实的自我", "理解这个世界和宇宙", "安全和稳定", "体验生命的丰富多彩", "掌控自己的命运", "内心的平静和世界的和谐"]}, {"q": "面对批评你的典型反应是？", "d": ["1", "2", "3", "4", "5", "6", "7", "8", "9"], "opts": ["表面平静内心严重受挫", "受伤但努力表现不在意", "分析批评是否有道理然后改进", "觉得批评者不理解真实的我", "不以为意保持距离", "非常在意反复回想", "一笑而过转眼就忘", "反击或无视觉得自己没错", "沉默接受避免争论"]}, {"q": "选择餐厅时你更可能？", "d": ["1", "2", "3", "4", "5", "6", "7", "8", "9"], "opts": ["研究评分选评分最高的", "选朋友推荐或口碑好的", "选最火爆最有名的那家", "选有独特氛围小众的", "网上详细研究菜单和评价", "选去过的熟悉的老地方", "选完全没试过的新餐厅", "果断决定不纠结", "随便都行你说了算"]}, {"q": "你做梦最常梦到什么？", "d": ["1", "2", "3", "4", "5", "6", "7", "8", "9"], "opts": ["考试迟到或犯错", "与爱人在一起", "站在领奖台上", "在一个奇幻美丽的世界", "独自在图书馆或迷宫中", "被追赶或处于危险", "在各地旅行冒险", "战斗或对抗", "在一个平静的自然场景中"]}, {"q": "你的消费观更接近？", "d": ["1", "2", "3", "4", "5", "6", "7", "8", "9"], "opts": ["只买最值得的高品质物品", "愿意为亲近的人花钱", "投资能提升效率的东西", "买能表达个性的独特物品", "购买前深入研究比价", "为安全感存钱和保险", "花钱买体验和快乐", "买有面子和地位的东西", "量入为出不浪费"]}],
+  bigfive: [{"q": "我对抽象的概念和理论很感兴趣", "d": "O", "r": 1}, {"q": "我喜欢尝试新的食物和体验", "d": "O", "r": 1}, {"q": "我经常沉浸在自己的想象世界中", "d": "O", "r": 1}, {"q": "我喜欢讨论哲学性的问题", "d": "O", "r": 1}, {"q": "我对艺术和美学有很强的欣赏力", "d": "O", "r": 1}, {"q": "我倾向于按照传统方式做事", "d": "O", "r": 0}, {"q": "我对新事物持开放态度", "d": "O", "r": 1}, {"q": "我喜欢阅读有挑战性的书籍", "d": "O", "r": 1}, {"q": "我做事很有条理和计划性", "d": "C", "r": 1}, {"q": "我会仔细检查工作中的细节", "d": "C", "r": 1}, {"q": "我能坚持完成任务不轻易放弃", "d": "C", "r": 1}, {"q": "我喜欢提前制定日程安排", "d": "C", "r": 1}, {"q": "我经常忘记放东西的地方", "d": "C", "r": 0}, {"q": "我在工作中追求卓越和完美", "d": "C", "r": 1}, {"q": "我做事常常是临时起意", "d": "C", "r": 0}, {"q": "我按时完成分配的任务", "d": "C", "r": 1}, {"q": "在社交场合中我感到自在和活跃", "d": "E", "r": 1}, {"q": "我喜欢成为注意力的中心", "d": "E", "r": 1}, {"q": "我觉得和很多人在一起很 energizing", "d": "E", "r": 1}, {"q": "我经常主动发起对话", "d": "E", "r": 1}, {"q": "我在安静的环境中更自在", "d": "E", "r": 0}, {"q": "我说话很多而且语速很快", "d": "E", "r": 1}, {"q": "我喜欢组织聚会和社交活动", "d": "E", "r": 1}, {"q": "我在陌生人面前比较拘谨", "d": "E", "r": 0}, {"q": "我愿意帮助别人即使付出代价", "d": "A", "r": 1}, {"q": "我信任别人的善意", "d": "A", "r": 1}, {"q": "我愿意原谅伤害过我的人", "d": "A", "r": 1}, {"q": "我对别人的感受很敏感", "d": "A", "r": 1}, {"q": "我有时候会对别人产生怀疑", "d": "A", "r": 0}, {"q": "我更倾向于合作而非竞争", "d": "A", "r": 1}, {"q": "我在争论中不愿意让步", "d": "A", "r": 0}, {"q": "我愿意体谅和迁就他人", "d": "A", "r": 1}, {"q": "我经常感到焦虑和紧张", "d": "N", "r": 1}, {"q": "我的情绪波动比较大", "d": "N", "r": 1}, {"q": "遇到压力时我很难保持冷静", "d": "N", "r": 1}, {"q": "我容易为小事担心", "d": "N", "r": 1}, {"q": "我大多数时候都很放松", "d": "N", "r": 0}, {"q": "我经常感到沮丧或低落", "d": "N", "r": 1}, {"q": "我在面对挫折时恢复得很快", "d": "N", "r": 0}, {"q": "我对自己的情绪控制力较强", "d": "N", "r": 0}],
+  animal: [{"q":"来到一个新城市你会先？","a":[{"t":"狮","s":"制定行动计划征服这个城市","l":"A"},{"t":"猫","s":"找一家安静的咖啡馆坐坐","l":"B"},{"t":"狼","s":"探索最有趣的小巷和角落","l":"C"},{"t":"海豚","s":"和当地人聊天了解风土人情","l":"D"},{"t":"鹰","s":"登上最高的观景台俯瞰全城","l":"E"},{"t":"鹿","s":"去附近的公园或自然保护区散步","l":"F"},{"t":"狐狸","s":"寻找只有本地人才知道的好去处","l":"G"},{"t":"猫头鹰","s":"先去博物馆和图书馆了解历史","l":"H"}]},{"q":"朋友遇到困难你最可能？","a":[{"t":"狮","s":"直接给出解决方案并帮他执行","l":"A"},{"t":"猫","s":"默默在旁边陪伴倾听","l":"B"},{"t":"狼","s":"帮他分析局势找到最优策略","l":"C"},{"t":"海豚","s":"用幽默和温暖让他振作起来","l":"D"},{"t":"鹰","s":"帮他看清全局找到最佳出路","l":"E"},{"t":"鹿","s":"给他一个温暖的拥抱让他安心","l":"F"},{"t":"狐狸","s":"用巧妙的方式帮他化解困境","l":"G"},{"t":"猫头鹰","s":"帮他理性梳理问题的来龙去脉","l":"H"}]},{"q":"你最享受的周末是？","a":[{"t":"狮","s":"完成一个挑战性的目标","l":"A"},{"t":"猫","s":"在家看书听音乐画画","l":"B"},{"t":"狼","s":"去一个从没去过的地方探险","l":"C"},{"t":"海豚","s":"和朋友们一起度过欢乐时光","l":"D"},{"t":"鹰","s":"独自去徒步或攀岩挑战自我","l":"E"},{"t":"鹿","s":"在大自然中冥想放松身心","l":"F"},{"t":"狐狸","s":"去体验一个新奇有趣的活动","l":"G"},{"t":"猫头鹰","s":"泡在书店或咖啡馆研究一个感兴趣的课题","l":"H"}]},{"q":"工作中你最看重？","a":[{"t":"狮","s":"清晰的决策权和主导地位","l":"A"},{"t":"猫","s":"安静独立的工作环境","l":"B"},{"t":"狼","s":"有挑战性需要创造力的任务","l":"C"},{"t":"海豚","s":"和谐融洽的团队氛围","l":"D"},{"t":"鹰","s":"能让我从宏观视角把控全局","l":"E"},{"t":"鹿","s":"有意义且能帮助他人的工作","l":"F"},{"t":"狐狸","s":"灵活自由不拘一格的工作方式","l":"G"},{"t":"猫头鹰","s":"能深入钻研发挥专业能力","l":"H"}]},{"q":"面对冲突你的方式是？","a":[{"t":"狮","s":"正面交锋果断解决","l":"A"},{"t":"猫","s":"退一步避免正面冲突","l":"B"},{"t":"狼","s":"冷静分析找到双方都能接受的方案","l":"C"},{"t":"海豚","s":"用幽默化解紧张气氛","l":"D"},{"t":"鹰","s":"直接指出问题的本质所在","l":"E"},{"t":"鹿","s":"耐心倾听双方的想法并调解","l":"F"},{"t":"狐狸","s":"用高情商化解矛盾让双方都满意","l":"G"},{"t":"猫头鹰","s":"用逻辑和事实证明自己的观点","l":"H"}]},{"q":"你选择电影的标准是？","a":[{"t":"狮","s":"有强烈主角和励志故事","l":"A"},{"t":"猫","s":"文艺细腻有深度","l":"B"},{"t":"狼","s":"悬疑烧脑有反转","l":"C"},{"t":"海豚","s":"轻松有趣让人开心","l":"D"},{"t":"鹰","s":"宏大的史诗或冒险片","l":"E"},{"t":"鹿","s":"温暖治愈的温情故事","l":"F"},{"t":"狐狸","s":"巧妙的骗局或反转剧情","l":"G"},{"t":"猫头鹰","s":"深刻的哲学或科幻作品","l":"H"}]},{"q":"你的领导风格是？","a":[{"t":"狮","s":"设定目标分配任务严格监督","l":"A"},{"t":"猫","s":"信任团队给予充分自主","l":"B"},{"t":"狼","s":"激发创意鼓励冒险创新","l":"C"},{"t":"海豚","s":"关心每个成员营造归属感","l":"D"},{"t":"鹰","s":"从战略高度规划团队方向","l":"E"},{"t":"鹿","s":"以身作则用行动激励团队","l":"F"},{"t":"狐狸","s":"根据每个人的特点灵活分配任务","l":"G"},{"t":"猫头鹰","s":"制定详细计划确保高效执行","l":"H"}]},{"q":"你最害怕的事情是？","a":[{"t":"狮","s":"失去控制力和影响力","l":"A"},{"t":"猫","s":"被迫社交和暴露在聚光灯下","l":"B"},{"t":"狼","s":"被困在无聊重复的生活中","l":"C"},{"t":"海豚","s":"被孤立和不被需要","l":"D"},{"t":"鹰","s":"失去自由被束缚和限制","l":"E"},{"t":"鹿","s":"看到亲近的人受伤痛苦","l":"F"},{"t":"狐狸","s":"被人看穿和算计","l":"G"},{"t":"猫头鹰","s":"被迫在信息不足时做决定","l":"H"}]},{"q":"你的决策风格是？","a":[{"t":"狮","s":"快速决断敢于承担风险","l":"A"},{"t":"猫","s":"深思熟虑反复权衡","l":"B"},{"t":"狼","s":"收集信息综合分析后决定","l":"C"},{"t":"海豚","s":"征询大家意见寻求共识","l":"D"},{"t":"鹰","s":"凭直觉和远见做出决定","l":"E"},{"t":"鹿","s":"考虑对每个人的影响后再决定","l":"F"},{"t":"狐狸","s":"灵活应变根据情况随时调整","l":"G"},{"t":"猫头鹰","s":"全面收集数据反复验证后决定","l":"H"}]},{"q":"在人群中你给人的印象是？","a":[{"t":"狮","s":"气场强大令人敬畏","l":"A"},{"t":"猫","s":"神秘优雅让人好奇","l":"B"},{"t":"狼","s":"聪明锐利有洞察力","l":"C"},{"t":"海豚","s":"温暖友好充满感染力","l":"D"},{"t":"鹰","s":"自信从容目光深邃","l":"E"},{"t":"鹿","s":"温柔谦逊让人感到舒服","l":"F"},{"t":"狐狸","s":"机智幽默魅力十足","l":"G"},{"t":"猫头鹰","s":"沉稳睿智博学多识","l":"H"}]},{"q":"你理想的度假方式是？","a":[{"t":"狮","s":"征服一座高山或完成极限运动","l":"A"},{"t":"猫","s":"在山间小屋安静地度过","l":"B"},{"t":"狼","s":"背包穿越无人区","l":"C"},{"t":"海豚","s":"去海边和朋友们一起狂欢","l":"D"},{"t":"鹰","s":"高空跳伞或滑翔体验自由","l":"E"},{"t":"鹿","s":"在森林木屋中远离喧嚣","l":"F"},{"t":"狐狸","s":"去一个异国他乡的集市淘宝","l":"G"},{"t":"猫头鹰","s":"参加一场学术研讨会或文化讲座","l":"H"}]},{"q":"你的学习方式更偏向？","a":[{"t":"狮","s":"动手实践在做中学","l":"A"},{"t":"猫","s":"独自阅读和深入研究","l":"B"},{"t":"狼","s":"探索多种方法找到最优路径","l":"C"},{"t":"海豚","s":"和他人讨论协作学习","l":"D"},{"t":"鹰","s":"先看全貌再决定深入哪个方向","l":"E"},{"t":"鹿","s":"通过观察和体验慢慢领悟","l":"F"},{"t":"狐狸","s":"从失败中快速学习总结经验","l":"G"},{"t":"猫头鹰","s":"系统性学习建立完整知识体系","l":"H"}]},{"q":"你对成功的定义是？","a":[{"t":"狮","s":"达到行业顶尖水平","l":"A"},{"t":"猫","s":"过上自己想要的生活","l":"B"},{"t":"狼","s":"突破边界创造新可能","l":"C"},{"t":"海豚","s":"拥有深厚的人际关系","l":"D"},{"t":"鹰","s":"实现远大的理想和抱负","l":"E"},{"t":"鹿","s":"帮助更多的人实现他们的梦想","l":"F"},{"t":"狐狸","s":"用智慧创造独特的价值","l":"G"},{"t":"猫头鹰","s":"在某个领域成为真正的专家","l":"H"}]},{"q":"深夜独处时你最可能在？","a":[{"t":"狮","s":"规划明天的战略","l":"A"},{"t":"猫","s":"沉浸在小说或音乐中","l":"B"},{"t":"狼","s":"研究一个感兴趣的新课题","l":"C"},{"t":"海豚","s":"和朋友在线聊天","l":"D"},{"t":"鹰","s":"思考人生的大方向和未来规划","l":"E"},{"t":"鹿","s":"写日记或记录心情感悟","l":"F"},{"t":"狐狸","s":"琢磨一个有趣的问题或创意","l":"G"},{"t":"猫头鹰","s":"阅读一本深度的非虚构书籍","l":"H"}]},{"q":"你的穿搭风格是？","a":[{"t":"狮","s":"简洁有力有领袖气质","l":"A"},{"t":"猫","s":"独特低调有品味","l":"B"},{"t":"狼","s":"不拘一格混合风格","l":"C"},{"t":"海豚","s":"舒适随和色彩明快","l":"D"},{"t":"鹰","s":"简约大气有品质感","l":"E"},{"t":"鹿","s":"柔软温暖自然风格","l":"F"},{"t":"狐狸","s":"时尚前卫引人注目","l":"G"},{"t":"猫头鹰","s":"经典考究低调有质感","l":"H"}]},{"q":"收到一个出乎意料的好消息你会？","a":[{"t":"鹰","s":"立刻计划如何最大化利用","l":"E"},{"t":"猫","s":"内心高兴但表面淡定","l":"B"},{"t":"狼","s":"分析这个消息背后的含义","l":"C"},{"t":"海豚","s":"马上分享给身边的人","l":"D"},{"t":"狮","s":"召集大家庆祝一下","l":"A"},{"t":"鹿","s":"默默感恩珍惜这份好运","l":"F"},{"t":"狐狸","s":"笑着想这一定有什么玄机","l":"G"},{"t":"猫头鹰","s":"先冷静下来再做判断","l":"H"}]},{"q":"你对待规则的态度是？","a":[{"t":"狮","s":"规则是让人遵守的除非我来改","l":"A"},{"t":"猫","s":"尽量不违反但也不主动关注","l":"B"},{"t":"狼","s":"规则只是参考可以灵活运用","l":"C"},{"t":"海豚","s":"遵守规则因为这对大家都好","l":"D"},{"t":"鹰","s":"看到规则背后的意义后选择性遵守","l":"E"},{"t":"鹿","s":"只要不伤害别人就行","l":"F"},{"t":"狐狸","s":"规则是给普通人设的","l":"G"},{"t":"猫头鹰","s":"理解规则存在的逻辑和必要性","l":"H"}]},{"q":"你最欣赏的历史人物类型是？","a":[{"t":"狮","s":"伟大的征服者和改革者","l":"A"},{"t":"猫","s":"隐居的哲人和艺术家","l":"B"},{"t":"狼","s":"发明家和科学先驱","l":"C"},{"t":"海豚","s":"外交家和人道主义者","l":"D"},{"t":"鹰","s":"有远见的战略家和思想家","l":"E"},{"t":"鹿","s":"无私奉献的医疗者和志愿者","l":"F"},{"t":"狐狸","s":"成功的谋略家和外交官","l":"G"},{"t":"猫头鹰","s":"百科全书式的通才学者","l":"H"}]},{"q":"你的金钱观是？","a":[{"t":"鹰","s":"赚钱是能力的体现应该大胆追求","l":"E"},{"t":"猫","s":"够用就好更看重生活品质","l":"B"},{"t":"狼","s":"钱是工具用来实现更大的目标","l":"C"},{"t":"海豚","s":"钱应该用来创造美好回忆和体验","l":"D"},{"t":"狮","s":"赚钱是为了获得更多选择权","l":"A"},{"t":"鹿","s":"钱应该用来帮助需要帮助的人","l":"F"},{"t":"狐狸","s":"聪明地投资让钱生钱","l":"G"},{"t":"猫头鹰","s":"做好财务规划稳健增值","l":"H"}]},{"q":"运动时你更偏好？","a":[{"t":"狮","s":"竞技类运动如篮球足球","l":"A"},{"t":"猫","s":"瑜伽或独自跑步","l":"B"},{"t":"狼","s":"攀岩或探险类运动","l":"C"},{"t":"海豚","s":"团体运动或舞蹈","l":"D"},{"t":"鹰","s":"马拉松或铁人三项等耐力挑战","l":"E"},{"t":"鹿","s":"散步或骑自行车欣赏风景","l":"F"},{"t":"狐狸","s":"桌球或保龄球等技巧类运动","l":"G"},{"t":"猫头鹰","s":"射箭或击剑等需要高度专注的运动","l":"H"}]},{"q":"如果可以拥有一种超能力你会选择？","a":[{"t":"狮","s":"超级力量——无人能敌","l":"A"},{"t":"猫","s":"隐身术——自由来去无踪","l":"B"},{"t":"狼","s":"读心术——洞察一切","l":"C"},{"t":"海豚","s":"治愈能力——消除所有痛苦","l":"D"},{"t":"鹰","s":"飞行能力——自由翱翔天际","l":"E"},{"t":"鹿","s":"与动物沟通的能力","l":"F"},{"t":"狐狸","s":"变形能力——千变万化","l":"G"},{"t":"猫头鹰","s":"预知未来——掌握命运","l":"H"}]},{"q":"你如何面对失败？","a":[{"t":"狮","s":"越挫越勇失败只是暂时的","l":"A"},{"t":"猫","s":"独自消化然后默默重新开始","l":"B"},{"t":"狼","s":"分析原因调整策略再来","l":"C"},{"t":"海豚","s":"找朋友倾诉很快就能振作","l":"D"},{"t":"鹰","s":"站在更高视角看待失败的价值","l":"E"},{"t":"鹿","s":"虽然难过但相信一切都有意义","l":"F"},{"t":"狐狸","s":"把失败变成下一次成功的筹码","l":"G"},{"t":"猫头鹰","s":"复盘总结从中提取经验教训","l":"H"}]}],
+  love: [{"q": "你最希望伴侣对你说什么？", "d": "WA", "opts": ["你真棒/我为你骄傲", "让我为你做点什么吧", "我们安静地待一会儿吧", "你今天穿得真好看"]}, {"q": "哪句话最让你感动？", "d": "WA", "opts": ["我需要你", "我帮你把家务做了", "我一直在你身边", "我给你买了个礼物"]}, {"q": "你觉得什么最能表达爱意？", "d": "WA", "opts": ["真诚的赞美和鼓励", "实际的帮助和行动", "一起度过高质量的时光", "精心准备的礼物"]}, {"q": "伴侣哪种行为最让你觉得被爱？", "d": "WA", "opts": ["经常说甜言蜜语", "主动承担家务", "放下手机专注陪我", "记住每个纪念日送惊喜"]}, {"q": "你最想收到的生日礼物是？", "d": "WA", "opts": ["一封写满爱意的长信", "帮你完成一件你一直想做的事", "一整天的专属约会", "一份昂贵精美的礼物"]}, {"q": "你更在意伴侣？", "d": "WA", "opts": ["经常表达对你的爱和欣赏", "在你需要帮助时及时出现", "愿意花时间陪你做你喜欢的事", "记住你的喜好并据此准备惊喜"]}, {"q": "理想的约会方式是？", "d": "QT", "opts": ["一起做饭分享一天的故事", "去高级餐厅享受美食", "各自安静地看书偶尔交谈", "参加一个有趣的活动或课程"]}, {"q": "伴侣玩手机不理你时你感觉？", "d": "QT", "opts": ["有点失落但能理解", "觉得这是对我不重视", "希望能放下手机聊聊天", "不如送我个礼物补偿一下"]}, {"q": "什么让你觉得和伴侣最亲密？", "d": "QT", "opts": ["深度交流分享内心想法", "并肩做家务或一起运动", "安静地坐在一起什么都不说", "一起计划一次旅行"]}, {"q": "你更珍视的关系时刻是？", "d": "QT", "opts": ["被真诚认可的时刻", "对方帮你解围的时刻", "两人独处没有干扰的时刻", "收到意外礼物的时刻"]}, {"q": "工作再忙你也希望伴侣？", "d": "QT", "opts": ["每天打电话互诉衷肠", "帮你处理生活琐事", "抽时间一起吃顿饭", "偶尔送小礼物制造惊喜"]}, {"q": "周末你最想和伴侣？", "d": "QT", "opts": ["互相交流最近的心情和计划", "一起打扫整理家里", "什么都不做就是待在一起", "去看一场演唱会或展览"]}, {"q": "生病时你最希望伴侣？", "d": "AS", "opts": ["不断发消息关心", "买药做饭照顾你", "陪在身边不离开", "买你最喜欢的零食"]}, {"q": "以下哪个最让你感动？", "d": "AS", "opts": ["对方写了一首诗给你", "对方帮你修好了坏掉的水龙头", "对方放下一切来陪你", "对方偷偷买下你购物车里犹豫很久的东西"]}, {"q": "你觉得'爱'在日常生活中最好体现为？", "d": "AS", "opts": ["每天说我爱你", "主动分担你的压力和负担", "全心全意的关注和倾听", "不时的小惊喜和礼物"]}, {"q": "忙碌一天回家你最希望看到？", "d": "AS", "opts": ["门口贴着爱你便签", "一顿做好的晚餐", "伴侣坐在沙发上等你", "桌上放着一个新礼物"]}, {"q": "你如何判断伴侣的真心？", "d": "AS", "opts": ["对方说了什么承诺", "对方为你做了什么实事", "对方花了多少时间陪你", "对方送了什么有意义的礼物"]}, {"q": "表达爱意你最擅长的方式是？", "d": "AS", "opts": ["写情书或说甜蜜的话", "帮对方跑腿办事解决问题", "创造专属的二人世界", "精心挑选礼物"]}, {"q": "走在街上你最自然的亲密动作是？", "d": "PT", "opts": ["手牵手", "挽着手臂", "靠在对方肩上", "不需要身体接触"]}, {"q": "吵架后你希望对方怎么和好？", "d": "PT", "opts": ["真诚道歉说出哪里错了", "用行动弥补错误", "给一个拥抱", "送道歉礼物"]}, {"q": "什么最能让你感到安全和被爱？", "d": "PT", "opts": ["对方说会永远陪着我", "对方帮你解决实际困难", "对方在你难过时抱着你", "对方给你一个惊喜"]}, {"q": "你表达安慰的方式是？", "d": "PT", "opts": ["说一些鼓励的话", "帮忙解决引起烦恼的问题", "安静地坐在旁边陪着", "轻轻拍对方的背或给一个拥抱"]}, {"q": "理想的早安方式是？", "d": "PT", "opts": ["收到一条甜蜜的早安消息", "对方已经做好了早餐", "被对方温柔地叫醒", "枕边放着一个小礼物"]}, {"q": "你认为最浪漫的事是？", "d": "PT", "opts": ["在星空下互诉衷肠", "一起完成一个挑战", "长途旅行中的某个瞬间", "一个温暖的拥抱"]}],
+  disc: [{"q": "在会议上遇到反对意见时你通常？", "d": "D", "opts": ["坚定地阐述自己的观点据理力争", "用数据和逻辑逐一回应", "保持开放倾听不同意见", "寻求共识避免冲突"]}, {"q": "面对紧急情况你首先会？", "d": "D", "opts": ["迅速做出决定并指挥行动", "快速分析情况制定方案", "先安抚团队情绪再行动", "按既定流程冷静执行"]}, {"q": "你如何看待竞争？", "d": "D", "opts": ["竞争让我更有动力要赢", "竞争是提升自己的机会", "不太喜欢竞争更喜欢合作", "尽力而为但不执着于输赢"]}, {"q": "你更喜欢的领导方式是？", "d": "D", "opts": ["果断决策快速推进", "理性规划高效执行", "民主参与充分讨论", "耐心指导逐步培养"]}, {"q": "面对一个困难任务你的态度是？", "d": "D", "opts": ["直接挑战越是困难越兴奋", "分解问题制定系统方案", "调动一切资源协同作战", "仔细评估确保万无一失"]}, {"q": "在社交场合中你通常是？", "d": "I", "opts": ["掌控话题的中心人物", "与几个人深度交流", "选择舒适的小圈子互动", "默默观察偶尔参与"]}, {"q": "说服别人接受你的想法时你会？", "d": "I", "opts": ["用自信和气场影响", "用充分的数据和分析说服", "用热情感染对方", "用周密的计划让对方信服"]}, {"q": "你对团队气氛的贡献是？", "d": "I", "opts": ["带来方向和决心", "带来智慧和策略", "带来活力和创意", "带来稳定和支持"]}, {"q": "你更喜欢什么样的工作环境？", "d": "I", "opts": ["快节奏高挑战", "有充足时间思考和规划", "自由开放充满创意", "稳定有序有清晰流程"]}, {"q": "面对公众演讲你的态度是？", "d": "I", "opts": ["享受聚光灯自信表达", "准备充分但略显紧张", "喜欢互动分享有趣的内容", "不太喜欢但能完成"]}, {"q": "你处理压力的方式更偏向？", "d": "I", "opts": ["化压力为动力更加拼搏", "理性分析找到减压方法", "通过运动或社交释放压力", "按照步骤一步步解决压力源"]}, {"q": "团队中有人犯了错你会？", "d": "S", "opts": ["直接指出要求改正", "分析原因给出建议", "私下温和地提醒", "帮助一起修复问题"]}, {"q": "你喜欢的工作节奏是？", "d": "S", "opts": ["越快越好高效产出", "有节奏地稳步推进", "灵活多变不拘一格", "按计划有条不紊"]}, {"q": "你对变化的适应程度是？", "d": "S", "opts": ["快速适应并引领变革", "理解变化后会积极配合", "需要时间适应但最终能接受", "倾向于维持稳定"]}, {"q": "在合作关系中你更看重？", "d": "S", "opts": ["效率和结果", "互补和协同", "信任和默契", "可靠和稳定"]}, {"q": "你如何对待承诺？", "d": "S", "opts": ["说到做到不轻易承诺", "兑现承诺是基本原则", "承诺后全力以赴", "谨慎承诺一旦答应一定做到"]}, {"q": "做决策前你通常会？", "d": "C", "opts": ["凭直觉快速判断", "收集信息权衡利弊", "征询他人意见", "查阅资料和数据反复验证"]}, {"q": "你对细节的态度是？", "d": "C", "opts": ["关注大局不太在意细节", "关键细节会注意到", "觉得细节重要但容易忽略", "非常注重每个细节"]}, {"q": "面对模糊不清的指令你会？", "d": "C", "opts": ["按自己的理解直接行动", "先询问确认再行动", "灵活解读发挥创意", "要求明确具体的指示"]}, {"q": "你如何评价自己的工作成果？", "d": "C", "opts": ["看是否达成目标", "看过程是否合理", "看是否有创新突破", "看是否符合标准和规范"]}, {"q": "学习新技能时你的方式是？", "d": "C", "opts": ["直接上手在实践中学习", "系统学习理论和实操", "通过观察他人来学习", "仔细阅读文档和教程"]}, {"q": "你对质量的追求程度是？", "d": "C", "opts": ["够好就行追求效率", "达到标准即可", "希望做出有特色的东西", "追求完美不允许瑕疵"]}],
+  holland: [{"q": "你更喜欢哪种活动？", "d": "R", "opts": ["修理或组装东西", "设计一个新方案", "帮助朋友解决情感问题", "组织一场社区活动"]}, {"q": "你理想的工作环境是？", "d": "R", "opts": ["在户外或车间使用工具", "在办公室使用电脑和软件", "在医院或诊所与人交流", "在教室或培训中心授课"]}, {"q": "你小时候最喜欢的玩具是？", "d": "R", "opts": ["积木、工具套装、模型", "画笔、拼图、化学实验箱", "玩偶、角色扮演游戏", "桌游、策略游戏"]}, {"q": "看纪录片你更偏好？", "d": "R", "opts": ["工程技术或极限运动类", "科学探索或宇宙类", "人文社会或心理类", "历史文化或艺术类"]}, {"q": "你在团队中最擅长的角色是？", "d": "R", "opts": ["动手执行的人", "创意策划的人", "协调沟通的人", "组织管理的人"]}, {"q": "你选择职业最看重？", "d": "R", "opts": ["实用性和具体产出", "创造性和智力挑战", "社会影响和帮助他人", "领导力和成就感"]}, {"q": "你更享受解决什么问题？", "d": "R", "opts": ["机械或技术故障", "理论或学术难题", "人际冲突或沟通障碍", "组织效率或流程优化"]}, {"q": "你的动手能力如何？", "d": "R", "opts": ["很强喜欢自己动手修理和制作", "一般更擅长脑力工作", "一般更擅长和人打交道", "一般但能学会"]}, {"q": "你对以下哪个话题最感兴趣？", "d": "I", "opts": ["最新的科技产品", "宇宙和量子物理", "人类行为和社会现象", "历史和文化传承"]}, {"q": "你更享受的学习方式是？", "d": "I", "opts": ["动手实验和实操训练", "独立研究和深度阅读", "小组讨论和案例分析", "实地考察和调研采访"]}, {"q": "面对一个复杂问题你首先？", "d": "I", "opts": ["直接尝试解决", "搜集资料分析原因", "与他人讨论获得不同视角", "制定系统方案"]}, {"q": "你更欣赏哪种人？", "d": "I", "opts": ["技术精湛的工匠", "思维深邃的科学家", "善于沟通的外交家", "果断有魄力的企业家"]}, {"q": "你最想培养的能力是？", "d": "I", "opts": ["精湛的手工技艺", "批判性思维和分析能力", "洞察人心的共情能力", "影响他人的领导力"]}, {"q": "闲暇时你更可能？", "d": "I", "opts": ["做手工或DIY项目", "读一本有深度的书", "参加志愿活动", "规划下一次旅行"]}, {"q": "你对数据的看法是？", "d": "I", "opts": ["数据不如实际经验重要", "数据是理解世界的关键", "数据能帮助了解人的需求", "数据能辅助做更好的决策"]}, {"q": "你更倾向于相信？", "d": "I", "opts": ["亲身体验和直觉", "科学研究和证据", "人际互动中的反馈", "历史经验和传统智慧"]}, {"q": "你在以下哪个方面最有天赋？", "d": "A", "opts": ["空间想象和操作能力", "逻辑推理和抽象思维", "语言表达和写作能力", "音乐或绘画等艺术表现力"]}, {"q": "你更向往的生活是？", "d": "A", "opts": ["简单务实脚踏实地", "充满探索和发现", "自由奔放充满创意", "稳定安逸有安全感"]}, {"q": "你更喜欢什么类型的电影？", "d": "A", "opts": ["动作片或战争片", "科幻片或纪录片", "剧情片或文艺片", "喜剧片或动画片"]}, {"q": "你的表达方式更接近？", "d": "A", "opts": ["简洁直接行动派", "严谨有逻辑分析派", "感性细腻共情派", "创意独特艺术派"]}, {"q": "在日常生活中你更关注？", "d": "A", "opts": ["事物的功能和实用性", "事物背后的原理", "事物的情感价值", "事物的美感和独特性"]}, {"q": "你觉得什么是好的设计？", "d": "A", "opts": ["功能强大实用", "逻辑清晰易用", "能引发情感共鸣", "视觉冲击力强有创意"]}, {"q": "你更可能把时间花在？", "d": "A", "opts": ["运动和户外活动", "学习和研究", "社交和人际互动", "创作和艺术活动"]}, {"q": "面对一个空房间你的第一想法是？", "d": "A", "opts": ["检查水电等基础设施", "研究采光通风等物理条件", "想象在这里和朋友聚会的场景", "思考如何装饰让它变得独特"]}, {"q": "你在群体中最自然的角色是？", "d": "S", "opts": ["执行者", "思考者", "倾听者和调解者", "组织者和激励者"]}, {"q": "你帮助别人时更倾向于？", "d": "S", "opts": ["帮他们解决具体问题", "帮他们分析理清思路", "给予情感支持和陪伴", "帮他们制定行动计划"]}, {"q": "你对志愿服务的看法是？", "d": "S", "opts": ["不如直接捐款更有效率", "可以通过志愿服务研究社会问题", "非常有意义能帮助他人", "是锻炼领导力的好机会"]}, {"q": "你更擅长处理什么？", "d": "S", "opts": ["机器和工具", "数据和理论", "人际关系和情感", "计划和流程"]}, {"q": "你最想对社会做出什么贡献？", "d": "S", "opts": ["建设更好的基础设施", "推动科技进步", "帮助弱势群体改善生活", "提高组织和社会的运行效率"]}, {"q": "你更享受哪种旅行方式？", "d": "S", "opts": ["自驾探险偏僻路线", "深入当地了解文化和历史", "和当地人交流体验生活", "精心规划高效打卡"]}, {"q": "你对教育的看法是？", "d": "S", "opts": ["应该注重实用技能培养", "应该注重创新思维培养", "应该注重品格和社会责任培养", "应该注重管理和领导力培养"]}, {"q": "你的朋友圈通常如何描述你？", "d": "S", "opts": ["靠谱的实干家", "聪明的问题解决者", "温暖的倾听者", "天生的领导者"]}, {"q": "以下哪种情况最让你兴奋？", "d": "E", "opts": ["完成一个技术难题", "发现一个有趣的理论", "帮助别人度过难关", "成功说服一群人接受你的方案"]}, {"q": "你对风险的看法是？", "d": "E", "opts": ["该冒的险就要冒", "计算好风险收益再行动", "风险太大不如稳妥行事", "风险是机会应该主动拥抱"]}, {"q": "你更喜欢哪种类型的书？", "d": "E", "opts": ["技术手册或操作指南", "科普或哲学著作", "人物传记或心理分析", "商业案例或管理类"]}, {"q": "面对一个创业机会你会？", "d": "E", "opts": ["评估技术可行性", "研究市场需求和模式", "考虑对社会的积极影响", "分析商业模式和盈利前景"]}, {"q": "你认为最重要的职场能力是？", "d": "E", "opts": ["专业技术能力", "分析和研究能力", "沟通和人际能力", "领导力和影响力"]}, {"q": "你更倾向于在什么类型的组织中工作？", "d": "E", "opts": ["技术驱动型公司", "研究机构或实验室", "非营利组织或教育机构", "创业公司或自己创业"]}, {"q": "你的消费习惯更接近？", "d": "E", "opts": ["买耐用品追求性价比", "买知识和体验", "买能增进关系的物品和服务", "投资型消费追求回报"]}, {"q": "你如何看待权力？", "d": "E", "opts": ["权力不是我的追求", "权力是实现想法的手段", "权力应该用来帮助他人", "权力是实现更大目标的必要工具"]}, {"q": "你对以下哪项工作最有耐心？", "d": "C", "opts": ["反复调试一个技术参数", "长时间研究一个学术课题", "倾听朋友反复倾诉同一件事", "整理和归档大量文件数据"]}, {"q": "你的整理习惯是？", "d": "C", "opts": ["工具和工作空间整齐有序", "书籍和笔记分类清晰", "通讯录和社交关系井井有条", "文件数据和日程精确管理"]}, {"q": "你对标准的看法是？", "d": "C", "opts": ["标准太死板限制发挥", "标准是有价值的参考", "标准应该以人为本灵活调整", "标准是质量和效率的保障"]}, {"q": "你更擅长？", "d": "C", "opts": ["实际操作和执行", "理论研究和分析", "理解和管理人际关系", "数据整理和流程优化"]}, {"q": "面对重复性工作你？", "d": "C", "opts": ["如果能提高效率就优化", "如果学不到东西就厌倦", "如果能帮助到人就愿意做", "不介意重复性工作能做好"]}, {"q": "你更喜欢使用什么工具？", "d": "C", "opts": ["锤子、扳手等物理工具", "思维导图和分析框架", "沟通技巧和心理模型", "电子表格和计划软件"]}, {"q": "你理想的工作状态是？", "d": "C", "opts": ["亲自动手完成看得见的成果", "深入思考解决有挑战性的问题", "与人互动建立深厚关系", "在有序的系统中高效运转"]}, {"q": "你对细节的关注程度是？", "d": "C", "opts": ["关键细节不遗漏", "善于发现隐藏的模式", "关注人的情绪变化", "每个细节都要求准确"]}]
+};
+
+const CONFIG = {
+  mbti: {name:'MBTI 16型人格',count:20,icon:'🧩',color:'#9B8EC4',type:'mbti'},
+  attachment: {name:'依恋类型测试',count:16,icon:'💞',color:'#D4898E',type:'attachment'},
+  enneagram: {name:'九型人格测试',count:27,icon:'🌀',color:'#D4A857',type:'enneagram'},
+  bigfive: {name:'大五人格测试',count:25,icon:'🌊',color:'#7BAE8E',type:'bigfive'},
+  animal: {name:'动物图腾测试',count:18,icon:'🐾',color:'#C4836A',type:'animal'},
+  love: {name:'爱的语言测试',count:18,icon:'❤️',color:'#E08A8A',type:'love'},
+  disc: {name:'DISC行为风格测试',count:20,icon:'💼',color:'#7BA3C4',type:'disc'},
+  holland: {name:'霍兰德职业测试',count:24,icon:'🧭',color:'#A3B87B',type:'holland'}
+};
+
+// ============================================================
+// UTILITY
+// ============================================================
+function shuffle(arr) {
+  const a = [...arr];
+  for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}
+  return a;
+}
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+// ============================================================
+// PARTICLES
+// ============================================================
+function initParticles(){
+  const c=document.getElementById('pc'),x=c.getContext('2d');
+  let W,H,pts=[];
+  function resize(){W=c.width=innerWidth;H=c.height=innerHeight;}
+  resize(); addEventListener('resize',resize);
+  class Petal{
+    constructor(){this.reset(true);}
+    reset(init){
+      this.x=Math.random()*W;
+      this.y=init?Math.random()*H:-20;
+      this.size=Math.random()*6+4;
+      this.dx=(Math.random()-.5)*.4;
+      this.dy=Math.random()*.5+.3;
+      this.rot=Math.random()*Math.PI*2;
+      this.rotSpeed=(Math.random()-.5)*.02;
+      this.swayAmp=Math.random()*30+10;
+      this.swaySpeed=Math.random()*.01+.005;
+      this.swayOffset=Math.random()*1000;
+      this.a=Math.random()*.35+.1;
+      // Watercolor petal colors
+      var palettes=['212,137,142','196,131,106','212,168,87','155,142,196','123,174,142','163,184,123','224,138,138'];
+      this.c=palettes[Math.floor(Math.random()*palettes.length)];
+      this.type=Math.random()>.3?'petal':'leaf';
+    }
+    update(t){
+      this.x+=this.dx+Math.sin(t*this.swaySpeed+this.swayOffset)*.5;
+      this.y+=this.dy;
+      this.rot+=this.rotSpeed;
+      if(this.y>H+20)this.reset(false);
+    }
+    draw(){
+      x.save();
+      x.translate(this.x,this.y);
+      x.rotate(this.rot);
+      x.globalAlpha=this.a;
+      x.fillStyle='rgba('+this.c+',1)';
+      if(this.type==='petal'){
+        x.beginPath();
+        x.ellipse(0,0,this.size*.5,this.size,0,0,Math.PI*2);
+        x.fill();
+      } else {
+        x.beginPath();
+        x.moveTo(0,-this.size);
+        x.quadraticCurveTo(this.size*.6,-this.size*.2,0,this.size);
+        x.quadraticCurveTo(-this.size*.6,-this.size*.2,0,-this.size);
+        x.fill();
+      }
+      x.restore();
+    }
+  }
+  for(let i=0;i<45;i++)pts.push(new Petal());
+  let t=0;
+  (function loop(){
+    x.clearRect(0,0,W,H);
+    t++;
+    pts.forEach(p=>{p.update(t);p.draw();});
+    requestAnimationFrame(loop);
+  })();
+}
+
+// ============================================================
+// NAVIGATION
+// ============================================================
+function home(){showScreen('home');updateHomeCards();updateDashBtn();}
+function goHome(){home();}
+function showDashboard(){dash();}
+
+function go(id){
+  // Check if there's a saved session for this test
+  const saved = loadSession(id);
+  if(saved && saved.answers && Object.keys(saved.answers).length > 0 && saved.answers._current < saved.questions.length){
+    // Resume
+    state.testSession = saved;
+    state.currentTest = id;
+    showTestScreen();
+    return;
+  }
+  startTest(id);
+}
+
+function startTest(id){
+  const bank = BANKS[id];
+  const cfg = CONFIG[id];
+  if(!bank || !cfg) return;
+  const questions = shuffle(bank).slice(0, cfg.count);
+  state.testSession = {testId: id, questions, answers: {}};
+  state.currentTest = id;
+  saveSession(id, state.testSession);
+  showTestScreen();
+}
+
+function showTestScreen(){
+  const cfg = CONFIG[state.currentTest];
+  const sess = state.testSession;
+  document.getElementById('testName').textContent = cfg.name;
+  document.getElementById('progressBar').style.background = cfg.color;
+  showScreen('test-screen');
+  renderQ();
+}
+
+function exit_t(){
+  saveSession(state.currentTest, state.testSession);
+  home();
+}
+
+function renderQ(){
+  const sess = state.testSession;
+  const cfg = CONFIG[state.currentTest];
+  const idx = sess.answers._current || 0;
+  if(idx >= sess.questions.length){finishTest();return;}
+  const q = sess.questions[idx];
+  const total = sess.questions.length;
+  const pct = Math.round(((idx)/total)*100);
+  document.getElementById('progressBar').style.width = pct+'%';
+  document.getElementById('qCounter').textContent = `${idx+1} / ${total} · ${pct}%`;
+  document.getElementById('questionArea').innerHTML = '';
+  
+  const wrap = document.createElement('div');
+  wrap.className = 'qw';
+  wrap.style.setProperty('--qc', cfg.color);
+  
+  let html = `<div class="qcard"><div class="qn">Q${idx+1}</div><div class="qt">${q.q}</div>`;
+  
+  if(q.t === 'bin'){
+    // MBTI binary choice
+    html += `<div class="obin">`;
+    q.opts.forEach((o,i)=>{
+      html += `<div class="ob" onclick="selectBin(${i},'${o.d}',${o.s})" style="--oc:${cfg.color}"><div class="ol" style="background:${cfg.color}33;color:${cfg.color}">${String.fromCharCode(65+i)}</div>${o.l}</div>`;
+    });
+    html += `</div>`;
+  } else if(q.a){
+    // Animal - 8 options with animal type
+    html += `<div class="oquad">`;
+    const animalEmojis = {A:'🦁',B:'🐱',C:'🐺',D:'🐬',E:'🦅',F:'🦌',G:'🦊',H:'🦉'};
+    q.a.forEach((o,i)=>{
+      html += `<div class="oq" onclick="selectAni('${o.l}')" style="--oc:${cfg.color}"><div class="qtag" style="background:${cfg.color}33;color:${cfg.color}">${animalEmojis[o.l]||o.l}</div><div><strong>${o.t}</strong><br><span style="font-size:.82rem;color:var(--text-secondary)">${o.s}</span></div></div>`;
+    });
+    html += `</div>`;
+  } else if(q.d && Array.isArray(q.d) && q.d.length > 2){
+    // Enneagram - 9 options in 3x3 grid
+    html += `<div class="oquad" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;">`;
+    const labels = ['₁','₂','₃','₄','₅','₆','₇','₈','₉'];
+    q.opts.forEach((o,i)=>{
+      html += `<div class="oq" onclick="selectEnn(${i})" style="--oc:${cfg.color}"><div class="qtag" style="background:${cfg.color}33;color:${cfg.color}">${labels[i]}</div>${o}</div>`;
+    });
+    html += `</div>`;
+  } else if(q.d && q.opts){
+    // Love/DISC/Holland - quad choice with dimension tracking
+    html += `<div class="oquad">`;
+    q.opts.forEach((o,i)=>{
+      html += `<div class="oq" onclick="selectGeneric(${i})" style="--oc:${cfg.color}"><div class="qtag" style="background:${cfg.color}33;color:${cfg.color}">${String.fromCharCode(65+i)}</div>${o}</div>`;
+    });
+    html += `</div>`;
+  } else if(q.opts){
+    // Attachment - quad choice without dimension
+    html += `<div class="oquad">`;
+    q.opts.forEach((o,i)=>{
+      html += `<div class="oq" onclick="selectQuad(${i})" style="--oc:${cfg.color}"><div class="qtag" style="background:${cfg.color}33;color:${cfg.color}">${String.fromCharCode(65+i)}</div>${o}</div>`;
+    });
+    html += `</div>`;
+  } else if(q.d){
+    // Big5 - Likert scale 1-5
+    html += `<div class="ort">`;
+    for(let i=1;i<=5;i++){
+      html += `<div class="rb" onclick="selectLikert(${i})" style="--oc:${cfg.color}">${i}</div>`;
+    }
+    html += `</div><div class="rl"><span>非常不同意</span><span>非常同意</span></div>`;
+  }
+  
+  html += `</div>`;
+  wrap.innerHTML = html;
+  document.getElementById('questionArea').appendChild(wrap);
+}
+
+function advance(){
+  const sess = state.testSession;
+  const idx = sess.answers._current || 0;
+  sess.answers._current = idx + 1;
+  saveSession(state.currentTest, sess);
+  renderQ();
+}
+
+function selectBin(i, dim, score){
+  const sess = state.testSession;
+  const idx = sess.answers._current || 0;
+  if(!sess.answers[dim]) sess.answers[dim]=[];
+  sess.answers[dim].push(score);
+  // Animate
+  var el = document.querySelectorAll('.ob')[i];
+  if(el){el.classList.add('sel');el.style.borderColor=CONFIG[state.currentTest].color;}
+  setTimeout(advance, 300);
+}
+
+function selectQuad(i){
+  const sess = state.testSession;
+  const idx = sess.answers._current || 0;
+  sess.answers[idx] = i;
+  var el = document.querySelectorAll('.oq')[i];
+  if(el){el.classList.add('sel');el.style.borderColor=CONFIG[state.currentTest].color;}
+  setTimeout(advance, 300);
+}
+
+function selectEnn(i){
+  const sess = state.testSession;
+  const idx = sess.answers._current || 0;
+  if(!sess.answers._enn) sess.answers._enn=[];
+  sess.answers._enn.push(i);
+  var el = document.querySelectorAll('.oq')[i];
+  if(el){el.classList.add('sel');el.style.borderColor=CONFIG[state.currentTest].color;}
+  setTimeout(advance, 300);
+}
+
+function selectAni(label){
+  const sess = state.testSession;
+  const idx = sess.answers._current || 0;
+  if(!sess.answers._ani) sess.answers._ani=[];
+  sess.answers._ani.push(label);
+  setTimeout(advance, 200);
+}
+
+function selectLikert(val){
+  const sess = state.testSession;
+  const idx = sess.answers._current || 0;
+  const q = sess.questions[idx];
+  sess.answers[idx] = {d:q.d, v:val};
+  const btns = document.querySelectorAll('.rb');
+  btns.forEach(b=>{
+    if(parseInt(b.textContent)===val){b.classList.add('sel');b.style.borderColor=CONFIG[state.currentTest].color;b.style.background=CONFIG[state.currentTest].color+'33';}
+  });
+  setTimeout(advance, 400);
+}
+
+function selectGeneric(i){
+  const sess = state.testSession;
+  const idx = sess.answers._current || 0;
+  const q = sess.questions[idx];
+  sess.answers[idx] = {d:q.d, v:i};
+  var el = document.querySelectorAll('.oq')[i];
+  if(el){el.classList.add('sel');el.style.borderColor=CONFIG[state.currentTest].color;}
+  setTimeout(advance, 300);
+}
+
+// ============================================================
+// RESULTS CALCULATION
+// ============================================================
+function finishTest(){
+  const sess = state.testSession;
+  const id = sess.testId;
+  let result;
+  switch(id){
+    case 'mbti': result = calcMBTI(sess); break;
+    case 'attachment': result = calcAtt(sess); break;
+    case 'enneagram': result = calcEnn(sess); break;
+    case 'bigfive': result = calcB5(sess); break;
+    case 'animal': result = calcAni(sess); break;
+    case 'love': result = calcLove(sess); break;
+    case 'disc': result = calcDisc(sess); break;
+    case 'holland': result = calcHol(sess); break;
+  }
+  state.results[id] = result;
+  // Clear session
+  clearSession(id);
+  saveResults();
+  // Save full session for answer review
+  saveTestReview(id, sess);
+  unlockGoose(id);
+  showResult(id, result);
+  confetti();
+  // Show unlock card popup
+  setTimeout(function(){ showUnlockCard(id); }, 800);
+}
+
+function calcMBTI(sess){
+  const a = sess.answers;
+  const dims = ['EI','SN','TF','JP'];
+  const types = [];
+  dims.forEach(d=>{
+    const arr = a[d]||[];
+    const sum = arr.reduce((s,v)=>s+v,0);
+    const ratio = arr.length>0 ? sum/arr.length : 0.5;
+    types.push(ratio>=0.5 ? d[0] : d[1]);
+  });
+  return {type: types.join(''), scores: dims.map(d=>{const arr=a[d]||[];return arr.length>0?arr.reduce((s,v)=>s+v,0)/arr.length:0.5;})};
+}
+
+function calcAtt(sess){
+  const a = sess.answers;
+  const qs = sess.questions;
+  // Count answers: 0=secure, 1=anxious, 2=avoidant, 3=disorganized
+  const counts = [0,0,0,0];
+  Object.keys(a).forEach(k=>{
+    if(k==='_current')return;
+    counts[a[k]] = (counts[a[k]]||0)+1;
+  });
+  const total = counts.reduce((s,v)=>s+v,0);
+  const maxIdx = counts.indexOf(Math.max(...counts));
+  const types = ['安全型','焦虑型','回避型','混乱型'];
+  const descs = [
+    '你在关系中感到安全，能够自在地表达需求和情感，也能给予伴侣足够的空间。你有良好的自我价值感，既不担心被抛弃也不过度依赖。',
+    '你在关系中容易感到不安和焦虑，对伴侣的行为高度敏感。你可能经常需要被确认和保证，害怕被抛弃，有时会显得过于依赖。',
+    '你在关系中倾向于保持情感距离，重视独立性和自主性。面对亲密可能感到不适，倾向于通过自我依赖来获得安全感。',
+    '你在关系中同时渴望亲密又害怕亲密，情绪波动较大。可能在接近和疏远之间反复摇摆，内心矛盾重重。'
+  ];
+  const colors = ['#7BAE8E','#D4898E','#7BA3C4','#D4A857'];
+  return {type:types[maxIdx], scores:counts.map(c=>total>0?Math.round(c/total*100):0), desc:descs[maxIdx], color:colors[maxIdx]};
+}
+
+function calcEnn(sess){
+  const a = sess.answers;
+  const counts = new Array(9).fill(0);
+  (a._enn||[]).forEach(v=>{counts[v]++;});
+  const total = counts.reduce((s,v)=>s+v,0);
+  const sorted = counts.map((c,i)=>({i,c})).sort((a,b)=>b.c-a.c);
+  const primary = sorted[0].i+1;
+  const secondary = sorted[1].i+1;
+  const names = ['完美主义者','给予者/助人者','成就者','个人主义者/浪漫者','探索者/观察者','忠诚者','热情者/享乐者','挑战者','和平者'];
+  const emojis = ['⚖️','🤲','🏆','🎭','🔍','🛡️','🌈','⚡','🕊️'];
+  const descs = [
+    '你追求完美和正确，有强烈的内在标准。你诚实正直，做事认真负责，但有时可能对自己和他人过于苛刻。',
+    '你天生具有关心他人的能力，慷慨大方，善于察言观色。你需要被需要的感觉，但有时可能忽略自己的需求。',
+    '你目标导向，追求成就和认可。你高效自信，有很强的执行力，但有时可能过度关注外在表现而忽略内心感受。',
+    '你追求独特性和真实自我，有着丰富的内心世界和强烈的情感。你富有创造力，但有时容易陷入情绪波动。',
+    '你渴望知识和理解，善于观察和思考。你独立内省，有着深邃的洞察力，但有时可能过于退缩到自己的世界。',
+    '你忠诚可靠，善于预见潜在的风险。你负责任有担当，在困难时刻能坚定支持他人，但有时可能过于焦虑和多疑。',
+    '你乐观开朗，充满好奇心和热情。你善于发现生活中的乐趣，但有时可能难以持续专注和面对痛苦。',
+    '你坚强果断，有强大的意志力和保护欲。你追求公平和正义，但有时可能过于直接和控制欲强。',
+    '你温和包容，善于调和不同的观点。你追求内心的和平与和谐，但有时可能回避冲突而忽略自己的需求。'
+  ];
+  const colors = ['#9B8EC4','#D4898E','#D4A857','#C4836A','#7BAE8E','#7BA3C4','#E08A8A','#A3B87B','#E8C872'];
+  return {
+    type: names[primary-1],
+    emoji: emojis[primary-1],
+    scores: counts.map(c=>total>0?Math.round(c/total*100):0),
+    desc: descs[primary-1],
+    sub: names[secondary-1],
+    color: colors[primary-1],
+    wing: `翼型：${names[primary-1]} + ${names[secondary-1]}`
+  };
+}
+
+function calcB5(sess){
+  const dims = ['O','C','E','A','N'];
+  const labels = ['开放性 Openness','尽责性 Conscientiousness','外向性 Extraversion','宜人性 Agreeableness','神经质 Neuroticism'];
+  const colors = ['#9B8EC4','#7BAE8E','#D4A857','#C4836A','#D4898E'];
+  const descs = [
+    '你思想开放，富有想象力和创造力。你喜欢探索新事物，对艺术和美学有很高的欣赏力。',
+    '你做事有计划有条理，追求卓越。你可靠自律，能够高效地完成目标。',
+    '你外向活跃，善于社交。你在人群中感到自在，喜欢成为注意力的中心。',
+    '你善良体贴，善于合作。你对他人充满同理心，愿意帮助他人。',
+    '你的情绪比较敏感，容易感到焦虑和紧张。你对压力的反应比较强烈。'
+  ];
+  const scores = {};
+  dims.forEach(d=>{
+      const vals = [];
+    Object.keys(sess.answers).forEach(k=>{
+      if(k==='_current')return;
+      const a = sess.answers[k];
+      if(a && a.d===d){
+        const q = sess.questions[parseInt(k)];
+        const reverse = q && q.r === 0;
+        vals.push(reverse ? (6 - a.v) : a.v);
+      }
+    });
+    const avg = vals.length>0 ? vals.reduce((s,v)=>s+v,0)/vals.length : 3;
+    scores[d] = Math.round(avg/5*100);
+  });
+  return {type:'大五人格', scores:dims.map(d=>scores[d]), labels, colors, descs};
+}
+
+function calcAni(sess){
+  const counts = {A:0,B:0,C:0,D:0,E:0,F:0,G:0,H:0};
+  (sess.answers._ani||[]).forEach(v=>{counts[v]=(counts[v]||0)+1;});
+  const total = Object.values(counts).reduce((s,v)=>s+v,0);
+  const sorted = Object.entries(counts).sort((a,b)=>b[1]-a[1]);
+  const map = {
+    A:{name:'狮子 · 统领者',emoji:'🦁',color:'#D4A857',
+      desc:'你天生具有领导力和决断力。你目标明确，行动果断，在困难面前从不退缩。你是天生的领袖，能够激励和带领团队走向成功。你的力量来自于你的勇气、自信和坚定的意志。',
+      traits:['果断决策','天生领袖','目标导向','勇于挑战'],
+      advice:'你的领导力是你的最大优势，但记得在强势之余也给身边的人更多倾听和理解的空间。有时候放慢脚步，享受过程的美好。',
+      strength:'你的存在感就像烈日，照亮前路也温暖追随者'},
+    B:{name:'猫 · 独行者',emoji:'🐱',color:'#9B8EC4',
+      desc:'你独立自主，内心丰富而深沉。你不需要外界的认可来定义自己的价值，享受独处时的宁静与自由。你有着敏锐的观察力和细腻的感受力，常常能看到别人忽略的美好。你的世界虽然安静，但远比看起来要丰富得多。',
+      traits:['独立自主','敏锐细腻','享受独处','审美独特'],
+      advice:'你的独立和内省是珍贵的天赋，但偶尔也可以试着向信任的人敞开心扉。你比自己以为的更被需要。',
+      strength:'你像月光一样安静，但你知道的光远比太阳看到的多'},
+    C:{name:'狼 · 探索者',emoji:'🐺',color:'#7BAE8E',
+      desc:'你充满好奇心和冒险精神，渴望探索未知的世界。你聪明机敏，善于思考和分析，在复杂的环境中能找到独特的解决方案。你重视团队的力量，但也保持着独立思考的能力。你追求自由，不愿被束缚。',
+      traits:['好奇冒险','思维敏捷','善于分析','追求自由'],
+      advice:'你的探索精神让你不断成长，但别忘了偶尔停下来总结和沉淀。深度的积累能让你的下一次出发更有力量。',
+      strength:'你的眼睛永远望向远方，因为你相信最好的风景还在路上'},
+    D:{name:'海豚 · 连接者',emoji:'🐬',color:'#C4836A',
+      desc:'你温暖友好，善于与人建立深厚的联系。你的存在就像阳光一样照亮身边的人。你有着强大的共情能力和感染力，能够轻松地融入各种社交场合。你是天生的社交家，也是朋友圈中的开心果和粘合剂。',
+      traits:['温暖感染力','强共情能力','天生社交家','团队粘合剂'],
+      advice:'你的温暖是珍贵的礼物，但也要记得给自己留一些空间和时间。学会在付出和自我关怀之间找到平衡。',
+      strength:'你在的地方就有笑声，你的善良是世界最温柔的力量'},
+    E:{name:'鹰 · 远见者',emoji:'🦅',color:'#C47A5A',
+      desc:'你有卓越的远见和洞察力，能够看到别人看不到的宏大图景。你追求自由和独立，不甘于平庸的生活。面对复杂局面时，你能快速抓住本质，做出精准的判断。你的视野决定了你的高度。',
+      traits:['卓越远见','战略思维','追求自由','判断精准'],
+      advice:'你的远见让你能够引领方向，但也别忘了关注脚下的每一步。再宏伟的蓝图也需要扎实的执行来落地。',
+      strength:'你在高空俯瞰众生，却永远不忘自己从何而来'},
+    F:{name:'鹿 · 治愈者',emoji:'🦌',color:'#B48EA0',
+      desc:'你温柔善良，拥有强大的同理心和治愈力量。你的存在就像森林中的清泉，给身边的人带来宁静和安慰。你善于倾听，总能在恰当的时候给出最温暖的支持。你的善良不是软弱，而是最强大的力量。',
+      traits:['温柔善良','强同理心','善于倾听','治愈力量'],
+      advice:'你的善良和付出是世界的光，但请记住你也需要被照顾。学会先关爱自己，才能更好地关爱他人。',
+      strength:'你的温柔是这个世界上最安静却最坚定的力量'},
+    G:{name:'狐狸 · 策略家',emoji:'🦊',color:'#C47A8A',
+      desc:'你机智灵活，有着过人的适应能力和变通思维。你擅长在复杂的人际关系中游刃有余，总能在最短的路径找到最优解。你充满魅力，善于沟通，但也保持着一份理性和清醒。你不是在算计，而是在用智慧让一切变得更顺畅。',
+      traits:['机智灵活','适应力强','善于沟通','魅力十足'],
+      advice:'你的聪明才智让你在人群中脱颖而出，但偶尔也可以卸下面具，展示最真实的自己。真诚是你最打动人的武器。',
+      strength:'你看透了规则的游戏，却选择用自己的方式优雅地赢'},
+    H:{name:'猫头鹰 · 智者',emoji:'🦉',color:'#7A8EB0',
+      desc:'你深邃睿智，是人群中的思想者。你追求知识的深度而非广度，喜欢在沉默中思考。你的见解独到而深刻，总能在关键时刻给出最有价值的观点。你不随波逐流，而是用自己的方式理解和解读这个世界。',
+      traits:['深邃睿智','独立思考','追求深度','见解独到'],
+      advice:'你的知识和智慧是无价的宝藏，但记得知识最终要转化为行动和分享。试着把你的智慧带给更多人。',
+      strength:'当世界都在奔跑时，你选择停下来思考——而你的答案往往最接近真相'}
+  };
+  const primary = map[sorted[0][0]];
+  primary.scores = Object.values(counts).map(c=>total>0?Math.round(c/total*100):0);
+  primary.scoreLabels = ['统领者','独行者','探索者','连接者','远见者','治愈者','策略家','智者'];
+  const subKey = sorted[1][0];
+  const secondary = map[subKey];
+  primary.sub = secondary.name;
+  primary.subEmoji = secondary.emoji;
+  return primary;
+}
+
+function calcLove(sess){
+  const dims = ['WA','QT','AS','PT'];
+  const names = ['肯定的话语 Words of Affirmation','精心时刻 Quality Time','服务的行动 Acts of Service','身体接触 Physical Touch'];
+  const colors = ['#D4898E','#9B8EC4','#7BAE8E','#C4836A'];
+  const descs = [
+    '你最重视语言上的表达——真诚的赞美、鼓励和爱的话语。对你来说，"我爱你"三个字有着无穷的力量。',
+    '你最珍视的是全心全意的陪伴。放下手机、专注地在一起，就是最深沉的爱。',
+    '你通过实际行动来感受爱——帮你分担家务、在你需要时出现、为你解决问题。',
+    '你通过身体接触来表达和接收爱——拥抱、牵手、依偎在你身边。'
+  ];
+  const counts = [0,0,0,0];
+  const qs = sess.questions;
+  Object.keys(sess.answers).forEach(k=>{
+    if(k==='_current')return;
+    const a = sess.answers[k];
+    if(a && dims.includes(a.d)){counts[dims.indexOf(a.d)]++;}
+  });
+  const total = counts.reduce((s,v)=>s+v,0)||1;
+  const maxIdx = counts.indexOf(Math.max(...counts));
+  return {type:names[maxIdx].split(' ')[0], scores:counts.map(c=>Math.round(c/total*100)), labels:names.map(n=>n.split(' ')[0]), colors, desc:descs[maxIdx]};
+}
+
+function calcDisc(sess){
+  const dims = ['D','I','S','C'];
+  const names = ['支配型 Dominance','影响型 Influence','稳健型 Steadiness','谨慎型 Compliance'];
+  const colors = ['#D4898E','#D4A857','#C4836A','#7BA3C4'];
+  const descs = [
+    '你是支配型——果断、直接、结果导向。你天生具有领导力，喜欢掌控局面，追求效率和成就。你在压力下表现出色，但需要注意给他人更多空间。',
+    '你是影响型——热情、乐观、善于交际。你有着强大的感染力和说服力，能够轻松地影响他人。你善于激发团队的积极性，但有时可能忽略细节。',
+    '你是稳健型——耐心、可靠、善于倾听。你是团队的中坚力量，能够在变化中保持稳定。你善于建立深厚的人际关系，但可能需要更多主动性。',
+    '你是谨慎型——精确、分析、注重细节。你追求质量和准确，善于系统化地解决问题。你在数据面前做出理性决策，但有时可能过于追求完美。'
+  ];
+  const counts = [0,0,0,0];
+  Object.keys(sess.answers).forEach(k=>{
+    if(k==='_current')return;
+    const a = sess.answers[k];
+    if(a && dims.includes(a.d)){counts[dims.indexOf(a.d)]++;}
+  });
+  const total = counts.reduce((s,v)=>s+v,0)||1;
+  const maxIdx = counts.indexOf(Math.max(...counts));
+  return {type:names[maxIdx].split(' ')[0], scores:counts.map(c=>Math.round(c/total*100)), labels:names.map(n=>n.split(' ')[0]), colors, desc:descs[maxIdx]};
+}
+
+function calcHol(sess){
+  const dims = ['R','I','A','S','E','C'];
+  const names = ['现实型 Realistic','研究型 Investigative','艺术型 Artistic','社会型 Social','企业型 Enterprising','常规型 Conventional'];
+  const emojis = ['🔧','🔬','🎨','🤝','📈','📊'];
+  const colors = ['#D4898E','#9B8EC4','#D4A857','#C4836A','#7BAE8E','#7BA3C4'];
+  const descs = [
+    '你偏向现实型——喜欢与物体、工具、机器打交道。你动手能力强，偏好具体实际的任务。适合工程技术、建筑制造、户外运动等职业方向。',
+    '你偏向研究型——喜欢分析和解决复杂问题。你好奇心强，善于抽象思维。适合科学研究、数据分析、技术开发等职业方向。',
+    '你偏向艺术型——富有创造力和想象力。你追求自我表达，不喜欢被规则束缚。适合设计、写作、音乐、影视等创意性职业方向。',
+    '你偏向社会型——善于与人交流和帮助他人。你有强烈的同理心和社会责任感。适合教育、咨询、医疗、社会服务等职业方向。',
+    '你偏向企业型——有领导才能和影响力。你善于说服和激励他人，追求权力和成就。适合管理、销售、创业、政治等职业方向。',
+    '你偏向常规型——注重秩序和细节。你做事有条理，善于处理数据和流程。适合会计、行政管理、质量控制等职业方向。'
+  ];
+  const counts = [0,0,0,0,0,0];
+  Object.keys(sess.answers).forEach(k=>{
+    if(k==='_current')return;
+    const a = sess.answers[k];
+    if(a && dims.includes(a.d)){counts[dims.indexOf(a.d)]++;}
+  });
+  const total = counts.reduce((s,v)=>s+v,0)||1;
+  const maxIdx = counts.indexOf(Math.max(...counts));
+  return {type:names[maxIdx].split(' ')[0], emoji:emojis[maxIdx], scores:counts.map(c=>Math.round(c/total*100)), labels:names.map(n=>n.split(' ')[0]), colors, desc:descs[maxIdx]};
+}
+
+// ============================================================
+// RESULT DISPLAY
+// ============================================================
+function showResult(id, result){
+  const cfg = CONFIG[id];
+  showScreen('result-screen');
+  let html = `<div class="rh"><span class="re">${cfg.icon}</span><div class="rn" style="color:${cfg.color}">${result.type||''}</div>`;
+  if(result.wing) html += `<div class="rsub">${result.wing}</div>`;
+  if(result.emoji) html += `<div class="rsub" style="font-size:2.5rem">${result.emoji}</div>`;
+  if(result.desc) html += `<div class="rsub">${result.desc}</div>`;
+  
+  // Tags
+  if(id==='mbti'){
+    const dnames = ['E/I','S/N','T/F','J/P'];
+    const dsides = [result.type[0]+'/'+result.type[1],result.type[2]+'/'+result.type[3],result.type[4]+'/'+result.type[5],result.type[6]+'/'+result.type[7]];
+    html += `<div class="rtags">`;
+    dsides.forEach((d,i)=>{html += `<span class="rtag" style="border-color:${cfg.color};color:${cfg.color}">${dnames[i]}: ${d}</span>`;});
+    html += `</div>`;
+  }
+  html += `</div>`;
+  
+  // Score bars
+  if(result.scores && result.scores.length>0){
+    html += `<div class="rb2"><div class="rs2"><h3>📊 得分分布</h3><div class="bc">`;
+    const labels = result.labels || (id==='enn'?['完美','给予','成就','浪漫','探索','忠诚','热情','挑战','和平'] : (id==='att'?['安全型','焦虑型','回避型','混乱型'] : ['A','B','C','D']));
+    const colors = result.colors || (id==='mbti'?['#9B8EC4','#D4898E','#7BAE8E','#C4836A'] : [cfg.color]);
+    result.scores.forEach((s,i)=>{
+      const c = colors[i%colors.length];
+      const l = labels[i]||i;
+      html += `<div class="blr"><span>${l}</span><span style="color:${c};font-weight:700">${s}%</span></div><div class="btr"><div class="bf" style="width:${s}%;background:${c}"></div></div>`;
+    });
+    html += `</div></div></div>`;
+  }
+  
+  // Big5 detailed sections
+  if(id==='bigfive' && result.descs){
+    html += `<div class="rb2">`;
+    const b5labels = ['开放性','尽责性','外向性','宜人性','神经质'];
+    result.descs.forEach((d,i)=>{
+      html += `<div class="rs2"><h3>${['🌍','📝','🎉','💛','💜'][i]} ${b5labels[i]} · ${result.scores[i]}%</h3><p>${d}</p></div>`;
+    });
+    html += `</div>`;
+  }
+  
+  // Actions
+  html += `<div class="ra">
+    <button class="bp" style="background:${cfg.color}" onclick="home()">🏠 返回首页</button>
+    <button class="bs" onclick="go('${id}')">🔄 重新测试</button>
+    <button class="bs" onclick="showReview('${id}')">📋 回顾答卷</button>
+  </div>`;
+  
+  // Goose preview
+  html += `<div class="goose-result-preview" style="margin-top:24px;background:var(--paper);border:1px solid var(--paper-border);border-radius:18px;padding:24px;text-align:center;">
+    <div style="font-size:2.8rem;margin-bottom:8px">${GOOSE_DATA[id].emoji}</div>
+    <div style="font-size:1.1rem;font-weight:700;color:${cfg.color}">${GOOSE_DATA[id].name}</div>
+    <div style="font-size:.85rem;color:var(--text-secondary);margin-top:4px">这只专属大鹅已加入你的鹅舍！</div>
+    <button class="bs" style="margin-top:14px;width:auto;padding:10px 24px" onclick="showGooseHouse()">🏠 查看鹅舍</button>
+  </div>`;
+  
+  document.getElementById('resultContent').innerHTML = html;
+  
+  // Animate bars
+  setTimeout(()=>{
+    document.querySelectorAll('.bf').forEach(b=>{const w=b.style.width;b.style.width='0%';setTimeout(()=>b.style.width=w,100);});
+  },100);
+}
+
+// ============================================================
+// DASHBOARD
+// ============================================================
+function dash(){
+  const r = state.results;
+  if(Object.keys(r).length<3){alert('完成至少3项测试后解锁综合画像');return;}
+  showScreen('dashboard-screen');
+  let html = '';
+  const cards = Object.entries(CONFIG);
+  cards.forEach(([id,cfg])=>{
+    if(!r[id])return;
+    const res = r[id];
+    html += `<div class="dc" style="animation-delay:${cards.indexOf([id,cfg])*.08}s">
+      <div class="dca" style="background:${cfg.color}"></div>
+      <div class="dci">${cfg.icon}</div>
+      <div class="dct">${cfg.name}</div>
+      <div class="dcr" style="color:${res.color||cfg.color}">${res.type||'已完成'}</div>
+      <div class="dcd">${(res.desc||'').substring(0,60)}...</div>
+    </div>`;
+  });
+  document.getElementById('dashCards').innerHTML = html;
+  
+  // Narrative
+  let narrative = '<h2>🌿 你的综合人格画像</h2><p>';
+  if(r.mbti) narrative += `作为<strong style="color:#9B8EC4">${r.mbti.type}</strong>型人格，`;
+  if(r.bigfive) narrative += `你的大五特质以${['开放性','尽责性','外向性','宜人性','神经质'][r.bigfive.scores.indexOf(Math.max(...r.bigfive.scores))]}最为突出，`;
+  if(r.animal) narrative += `你的内在图腾是<strong style="color:${r.animal.color}">${r.animal.type}</strong>，`;
+  if(r.enneagram) narrative += `九型人格中你属于<strong>${r.enneagram.type}</strong>，`;
+  if(r.attachment) narrative += `依恋类型为<strong>${r.attachment.type}</strong>，`;
+  if(r.love) narrative += `爱的语言是<strong>${r.love.type}</strong>，`;
+  if(r.disc) narrative += `DISC风格为<strong>${r.disc.type}</strong>，`;
+  if(r.holland) narrative += `霍兰德职业类型为<strong>${r.holland.type}</strong>，`;
+  narrative += `这些特质共同构成了独一无二的你。</p>`;
+  document.getElementById('dashNarrative').innerHTML = narrative;
+}
+
+function updateDashBtn(){
+  const n = Object.keys(state.results).length;
+  const btn = document.getElementById('dashBtn');
+  const hint = document.getElementById('dashHint');
+  btn.disabled = n<3;
+  hint.textContent = n>=3 ? `已完成${n}项测试，点击查看综合画像` : `已完成${n}/8项，还需${Math.max(0,3-n)}项解锁`;
+}
+
+function updateHomeCards(){
+  document.querySelectorAll('.test-card').forEach(card=>{
+    const t = card.dataset.test;
+    const badge = card.querySelector('.cok');
+    const resBadge = card.querySelector('.cres');
+    if(badge) badge.remove();
+    if(resBadge) resBadge.remove();
+    if(state.results[t]){
+      const span = document.createElement('span');
+      span.className = 'cok';
+      span.textContent = '✓ 已完成';
+      card.appendChild(span);
+    } else {
+      const saved = loadSession(t);
+      if(saved && saved.answers && saved.answers._current > 0){
+        const span = document.createElement('span');
+        span.className = 'cres';
+        span.textContent = `⏸ 进行中 ${saved.answers._current}/${saved.questions.length}`;
+        card.appendChild(span);
+      }
+    }
+  });
+}
+
+// ============================================================
+// CONFETTI
+// ============================================================
+function confetti(){
+  const colors = ['#9B8EC4','#D4898E','#D4A857','#7BAE8E','#C4836A','#E08A8A','#7BA3C4'];
+  for(let i=0;i<60;i++){
+    const el = document.createElement('div');
+    el.className = 'cfp';
+    el.style.cssText = `left:${Math.random()*100}vw;top:-10px;width:${Math.random()*8+4}px;height:${Math.random()*8+4}px;background:${colors[Math.floor(Math.random()*colors.length)]};animation-duration:${Math.random()*2+2}s;animation-delay:${Math.random()*.5}s;`;
+    document.body.appendChild(el);
+    setTimeout(()=>el.remove(),4500);
+  }
+}
+
+// ============================================================
+// STORAGE (resume support)
+// ============================================================
+function saveSession(id, sess){
+  try{
+    localStorage.setItem('pt_session_'+id, JSON.stringify(sess));
+  }catch(e){}
+}
+
+function loadSession(id){
+  try{
+    const s = localStorage.getItem('pt_session_'+id);
+    return s ? JSON.parse(s) : null;
+  }catch(e){return null;}
+}
+
+function clearSession(id){
+  try{localStorage.removeItem('pt_session_'+id);}catch(e){}
+}
+
+function saveResults(){
+  try{localStorage.setItem('pt_results', JSON.stringify(state.results));}catch(e){}
+}
+
+function loadResults(){
+  try{
+    const s = localStorage.getItem('pt_results');
+    if(s) Object.assign(state.results, JSON.parse(s));
+  }catch(e){}
+}
+
+// ============================================================
+// GOOSE COLLECTION SYSTEM
+// ============================================================
+const GOOSE_DATA = {
+  mbti: {name:'拼图鹅',emoji:'🧩',color:'#9B8EC4',desc:'这只鹅喜欢把世界的碎片拼成完整的图案。它永远在思考"你是谁"，并且真心相信每一种人格类型都值得被理解。它戴着由16块拼图组成的帽子，每完成一次拼图就会开心地拍翅膀。'},
+  attachment: {name:'恋恋鹅',emoji:'💞',color:'#D4898E',desc:'这只鹅非常重视感情，它会把最柔软的羽毛送给喜欢的人。虽然有时候它会因为太在乎而显得有些黏人，但它的爱是世界上最真诚的。它的翅膀上画着一颗跳动的爱心。'},
+  enneagram: {name:'九宫鹅',emoji:'🌀',color:'#D4A857',desc:'这只鹅站在九宫格中央，能同时看到所有人格类型的美丽。它戴着一顶橙色的小皇冠，因为它深信每个数字背后都藏着一个有趣的灵魂。它最喜欢用尾巴画出九宫格的图案。'},
+  bigfive: {name:'五维鹅',emoji:'🌊',color:'#7BAE8E',desc:'这只鹅住在一片由五个维度构成的海洋中。它的羽毛会随着开放性、尽责性、外向性、宜人性和神经质的波动而变换颜色。它游过海浪时，身后会留下五道彩色的水纹。'},
+  animal: {name:'图腾鹅',emoji:'🐾',color:'#C4836A',desc:'这只鹅拥有召唤所有动物朋友的能力。它的羽毛上天然生长着不同动物的纹理——有时候是狮子的鬃毛花纹，有时候是猫的条纹。它能和任何生物心灵感应。'},
+  love: {name:'蜜语鹅',emoji:'💌',color:'#E08A8A',desc:'这只鹅是世界上最浪漫的邮递员，它用粉色的信封装着五种爱的语言，飞遍世界送出温暖。它会在你耳边轻声说出最好听的情话，然后用翅膀轻轻给你一个拥抱。'},
+  disc: {name:'领带鹅',emoji:'💼',color:'#7BA3C4',desc:'这只鹅是鹅群中最专业的管理者，它每天早晨都会系好它那条蓝色的小领带。它能把任何混乱的局面变得井井有条，而且总是能找到最适合每只鹅的岗位。'},
+  holland: {name:'指南鹅',emoji:'🧭',color:'#A3B87B',desc:'这只鹅手里永远拿着一个指南针，它相信每个人都有一条专属的职业道路。它会用嘴巴在地图上画出最适合你的航线，然后陪你一起飞向梦想的彼岸。'},
+  ultimate: {name:'终极神鹅',emoji:'✨',color:'#D4A857',desc:'传说中的终极神鹅，集齐8只大鹅后才会降临。它拥有所有大鹅的力量和智慧，浑身散发着金色的光芒。它代表着完整的自我认知——你不再只是某个标签，而是一个丰富而独特的存在。'}
+};
+
+function unlockGoose(testId){
+  try{
+    var unlocked = JSON.parse(localStorage.getItem('pt_geese')||'{}');
+    if(!unlocked[testId]){unlocked[testId]=true;}
+    // Check for ultimate goose
+    var allTests = ['mbti','attachment','enneagram','bigfive','animal','love','disc','holland'];
+    var allDone = allTests.every(function(t){return unlocked[t];});
+    if(allDone){unlocked.ultimate=true;}
+    localStorage.setItem('pt_geese',JSON.stringify(unlocked));
+  }catch(e){}
+}
+
+function loadGeese(){
+  try{
+    var s = localStorage.getItem('pt_geese');
+    return s?JSON.parse(s):{};
+  }catch(e){return {};}
+}
+
+function showGooseHouse(){
+  showScreen('goose-screen');
+  renderGooseHouse();
+}
+
+function renderGooseHouse(){
+  var geese = loadGeese();
+  var allTests = ['mbti','attachment','enneagram','bigfive','animal','love','disc','holland'];
+  var unlockedCount = allTests.filter(function(t){return geese[t];}).length;
+  var hasUltimate = !!geese.ultimate;
+  var el = document.getElementById('gooseContent');
+  if(!el) return;
+  
+  var html = '<div style="text-align:center;margin-bottom:40px">';
+  html += '<div style="font-size:3.5rem;margin-bottom:12px;filter:drop-shadow(0 4px 12px rgba(0,0,0,.3))">🪿</div>';
+  html += '<h2 style="font-size:1.8rem;font-weight:800;margin-bottom:8px;background:linear-gradient(135deg,#C4836A,#7BAE8E);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">你的专属鹅舍</h2>';
+  html += '<p style="color:var(--text-secondary);font-size:.95rem">完成测试解锁专属大鹅 · 每只鹅住在独特的场景中</p>';
+  html += '<div style="margin-top:16px;font-size:.9rem;color:'+((unlockedCount>=8)?'#ffd700':'var(--text-secondary)')+';font-weight:600">已收集 '+unlockedCount+'/8 只大鹅'+(hasUltimate?' · 🌟 终极神鹅已降临!':'')+'</div>';
+  html += '</div>';
+  
+  // Progress bar
+  html += '<div style="background:rgba(139,109,74,.08);border-radius:12px;height:10px;margin-bottom:36px;overflow:hidden;position:relative">';
+  html += '<div style="height:10px;border-radius:12px;width:'+Math.round(unlockedCount/8*100)+'%;background:linear-gradient(90deg,#9B8EC4,#D4898E,#C4836A,#D4A857);transition:width .8s ease;position:relative">';
+  html += '<div style="position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.5),transparent);animation:shimmer 2s linear infinite;background-size:200% 100%"></div>';
+  html += '</div></div>';
+  
+  // Scene card grid
+  html += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px;margin-bottom:32px">';
+  allTests.forEach(function(id,i){
+    var unlocked = !!geese[id];
+    var res = state.results[id];
+    html += renderSceneCard(id, unlocked, res);
+  });
+  html += '</div>';
+  
+  // Ultimate goose scene
+  html += renderUltimateScene(hasUltimate);
+  
+  // Back button
+  html += '<div style="text-align:center;margin-top:32px">';
+  html += '<button class="bs" style="display:inline-block;width:auto;padding:12px 32px" onclick="home()">← 返回首页</button>';
+  html += '</div>';
+  
+  el.innerHTML = html;
+}
+
+// ============================================================
+// SVG CARTOON GOOSE GENERATOR
+// ============================================================
+function gooseSVG(cfg) {
+  var body = cfg.bodyColor || '#fff';
+  var head = cfg.headColor || '#fff';
+  var beak = cfg.beakColor || '#ff9800';
+  var wing = cfg.wingColor || '#f0f0f0';
+  var blush = cfg.blushColor || 'rgba(255,182,193,0.5)';
+  var eye = cfg.eyeColor || '#333';
+  var w = cfg.width || 160;
+  var h = cfg.height || 180;
+  var acc = cfg.accessory || '';
+  var bodyGrad = cfg.bodyGrad || '';
+  var extras = cfg.extras || '';
+
+  var bodyFill = bodyGrad ? 'url(#bg_'+cfg.id+')' : body;
+  var defs = bodyGrad ? '<defs><linearGradient id="bg_'+cfg.id+'" x1="0" y1="0" x2="1" y2="1">'+bodyGrad+'</linearGradient></defs>' : '';
+
+  return '<svg viewBox="0 0 200 220" width="'+w+'" height="'+h+'" xmlns="http://www.w3.org/2000/svg">'+
+    defs+
+    // Shadow
+    '<ellipse cx="100" cy="212" rx="38" ry="7" fill="rgba(0,0,0,0.15)"/>'+
+    // Feet
+    '<ellipse cx="80" cy="198" rx="14" ry="5" fill="'+beak+'"/>'+
+    '<ellipse cx="120" cy="198" rx="14" ry="5" fill="'+beak+'"/>'+
+    // Body
+    '<ellipse cx="100" cy="148" rx="50" ry="46" fill="'+bodyFill+'"/>'+
+    // Belly highlight
+    '<ellipse cx="100" cy="155" rx="30" ry="28" fill="rgba(255,255,255,0.2)"/>'+
+    // Wing
+    '<ellipse cx="58" cy="142" rx="20" ry="30" fill="'+wing+'" transform="rotate(-12 58 142)"/>'+
+    '<ellipse cx="58" cy="138" rx="12" ry="18" fill="rgba(255,255,255,0.15)" transform="rotate(-12 58 138)"/>'+
+    // Neck
+    '<ellipse cx="100" cy="105" rx="18" ry="20" fill="'+bodyFill+'"/>'+
+    // Head
+    '<circle cx="100" cy="78" r="32" fill="'+head+'"/>'+
+    // Head highlight
+    '<circle cx="95" cy="72" r="18" fill="rgba(255,255,255,0.15)"/>'+
+    // Beak
+    '<polygon points="127,74 156,68 127,84" fill="'+beak+'"/>'+
+    '<line x1="127" y1="78" x2="153" y2="74" stroke="rgba(0,0,0,0.12)" stroke-width="0.8"/>'+
+    // Eye
+    '<circle cx="113" cy="72" r="5.5" fill="'+eye+'"/>'+
+    '<circle cx="115" cy="70" r="2" fill="white"/>'+
+    '<circle cx="111" cy="74" r="1" fill="white" opacity="0.5"/>'+
+    // Eyebrow
+    '<path d="M107 64 Q113 61 119 64" stroke="'+eye+'" stroke-width="1.5" fill="none" stroke-linecap="round"/>'+
+    // Blush
+    '<ellipse cx="90" cy="86" rx="9" ry="5" fill="'+blush+'"/>'+
+    // Accessory
+    acc+
+    // Extras
+    extras+
+  '</svg>';
+}
+
+// Individual goose configurations
+var GOOSE_SVG = {
+  mbti: function(){ return gooseSVG({
+    id:'mbti', bodyGrad:'<stop offset="0%" stop-color="#E8E0F7"/><stop offset="100%" stop-color="#C4B5E8"/>',
+    head:'#F0ECFF', wing:'#D8CCF0', blush:'rgba(155,142,196,0.35)', beak:'#C4935A',
+    accessory:
+      // Puzzle-piece hat
+      '<rect x="82" y="40" width="36" height="16" rx="4" fill="#9B8EC4"/>'+
+      '<rect x="88" y="34" width="10" height="12" rx="3" fill="#9B8EC4"/>'+
+      '<rect x="106" y="36" width="8" height="10" rx="3" fill="#9B8EC4"/>'+
+      '<rect x="96" y="32" width="8" height="12" rx="3" fill="#B0A4D4"/>'+
+      // Glasses
+      '<circle cx="105" cy="72" r="10" fill="none" stroke="#8A7AB0" stroke-width="2"/>'+
+      '<circle cx="91" cy="72" r="10" fill="none" stroke="#8A7AB0" stroke-width="2"/>'+
+      '<line x1="115" y1="72" x2="127" y2="74" stroke="#8A7AB0" stroke-width="1.5"/>'
+  });},
+  attachment: function(){ return gooseSVG({
+    id:'att', bodyGrad:'<stop offset="0%" stop-color="#FBE4E7"/><stop offset="100%" stop-color="#F0C8D0"/>',
+    head:'#FFF0F3', wing:'#F5D5DC', blush:'rgba(212,137,142,0.5)', beak:'#D4898E',
+    accessory:
+      // Heart hair clip
+      '<path d="M118 52 C118 48 124 44 124 52 C124 56 118 60 118 60 C118 60 112 56 112 52 C112 44 118 48 118 52Z" fill="#D4898E"/>'+
+      // Holding love letter
+      '<rect x="140" y="140" width="18" height="22" rx="2" fill="#FFFDF8" transform="rotate(15 149 151)"/>'+
+      '<path d="M143 140 L149 146 L155 140" fill="#D4898E" transform="rotate(15 149 151)"/>'+
+      // Extra hearts floating
+      '<path d="M55 100 C55 97 59 95 59 100 C59 103 55 105 55 105 C55 105 51 103 51 100 C51 95 55 97 55 100Z" fill="#D4898E" opacity="0.6"/>'
+  });},
+  enneagram: function(){ return gooseSVG({
+    id:'enn', bodyGrad:'<stop offset="0%" stop-color="#FDF2D8"/><stop offset="100%" stop-color="#F0DEB0"/>',
+    head:'#FFF8EE', wing:'#F5E8C8', blush:'rgba(212,168,87,0.4)', beak:'#B8903A',
+    accessory:
+      // Crown
+      '<polygon points="84,48 88,30 96,42 100,26 104,42 112,30 116,48" fill="#D4A857" stroke="#B8903A" stroke-width="1"/>'+
+      '<rect x="84" y="46" width="32" height="8" rx="3" fill="#D4A857"/>'+
+      '<circle cx="100" cy="36" r="2.5" fill="#E8C872"/>'+
+      '<circle cx="90" cy="38" r="2" fill="#E8C872"/>'+
+      '<circle cx="110" cy="38" r="2" fill="#E8C872"/>'
+  });},
+  bigfive: function(){ return gooseSVG({
+    id:'b5', bodyGrad:'<stop offset="0%" stop-color="#DEF0E8"/><stop offset="100%" stop-color="#B0DCC8"/>',
+    head:'#EEF8F4', wing:'#C8E8D8', blush:'rgba(123,174,142,0.4)', beak:'#5A9A78',
+    accessory:
+      // Swimming goggles
+      '<ellipse cx="106" cy="72" rx="12" ry="9" fill="rgba(123,174,142,0.2)" stroke="#7BAE8E" stroke-width="2.5"/>'+
+      '<rect x="86" y="70" width="20" height="4" rx="2" fill="#7BAE8E"/>'+
+      '<ellipse cx="91" cy="72" rx="5" ry="5" fill="rgba(123,174,142,0.3)" stroke="#7BAE8E" stroke-width="2"/>'+
+      // Five colored dots on wing
+      '<circle cx="50" cy="135" r="3" fill="#9B8EC4"/><circle cx="55" cy="143" r="3" fill="#7BAE8E"/>'+
+      '<circle cx="60" cy="150" r="3" fill="#D4A857"/><circle cx="65" cy="143" r="3" fill="#C4836A"/>'+
+      '<circle cx="70" cy="135" r="3" fill="#D4898E"/>'
+  });},
+  animal: function(){ return gooseSVG({
+    id:'ani', bodyGrad:'<stop offset="0%" stop-color="#F5E0D8"/><stop offset="100%" stop-color="#E0C0B0"/>',
+    head:'#F8EAE4', wing:'#ECD5CC', blush:'rgba(196,131,106,0.4)', beak:'#8B6A50',
+    accessory:
+      // Tribal marks on forehead
+      '<line x1="88" y1="58" x2="92" y2="50" stroke="#8B6A50" stroke-width="2" stroke-linecap="round"/>'+
+      '<line x1="100" y1="56" x2="100" y2="47" stroke="#8B6A50" stroke-width="2" stroke-linecap="round"/>'+
+      '<line x1="112" y1="58" x2="108" y2="50" stroke="#8B6A50" stroke-width="2" stroke-linecap="round"/>'+
+      // Paw prints
+      '<circle cx="45" cy="130" r="2" fill="#C4836A"/><circle cx="42" cy="126" r="1.5" fill="#C4836A"/>'+
+      '<circle cx="48" cy="126" r="1.5" fill="#C4836A"/><circle cx="44" cy="123" r="1.5" fill="#C4836A"/>'+
+      // Feather pattern
+      '<path d="M55 118 Q60 110 55 102" stroke="#8B6A50" stroke-width="1.5" fill="none"/>'+
+      '<path d="M50 122 Q58 112 52 104" stroke="#C4836A" stroke-width="1.5" fill="none"/>'
+  });},
+  love: function(){ return gooseSVG({
+    id:'love', bodyGrad:'<stop offset="0%" stop-color="#FCE4E4"/><stop offset="100%" stop-color="#F0C0C0"/>',
+    head:'#FFF0F0', wing:'#F5D5D5', blush:'rgba(224,138,138,0.5)', beak:'#C46A6A',
+    accessory:
+      // Beret
+      '<ellipse cx="92" cy="48" rx="28" ry="10" fill="#E08A8A"/>'+
+      '<circle cx="82" cy="42" r="4" fill="#E08A8A"/>'+
+      // Mail bag strap
+      '<line x1="145" y1="105" x2="80" y2="140" stroke="#C46A6A" stroke-width="3" stroke-linecap="round"/>'+
+      // Small envelope
+      '<rect x="138" y="98" width="16" height="12" rx="1.5" fill="#FFFDF8" stroke="#C46A6A" stroke-width="1" transform="rotate(10 146 104)"/>'+
+      '<path d="M140 98 L146 104 L152 98" fill="none" stroke="#E08A8A" stroke-width="1" transform="rotate(10 146 104)"/>'
+  });},
+  disc: function(){ return gooseSVG({
+    id:'disc', bodyGrad:'<stop offset="0%" stop-color="#DFEBF5"/><stop offset="100%" stop-color="#B0CCE0"/>',
+    head:'#EEF4FA', wing:'#C8D8E8', blush:'rgba(123,163,196,0.35)', beak:'#5A80A0',
+    accessory:
+      // Necktie
+      '<polygon points="96,112 104,112 107,140 100,148 93,140" fill="#7BA3C4"/>'+
+      '<polygon points="97,112 103,112 101,118 99,118" fill="#5A90B0"/>'+
+      // Collar
+      '<path d="M80 108 Q90 115 100 108 Q110 115 120 108" fill="none" stroke="#7BA3C4" stroke-width="2.5"/>'+
+      // Small chart in wing
+      '<rect x="44" y="130" width="14" height="18" rx="2" fill="rgba(255,255,255,0.3)"/>'+
+      '<rect x="47" y="140" width="3" height="5" fill="#7BA3C4" rx="1"/>'+
+      '<rect x="52" y="136" width="3" height="9" fill="#90B8D0" rx="1"/>'
+  });},
+  holland: function(){ return gooseSVG({
+    id:'hol', bodyGrad:'<stop offset="0%" stop-color="#EBF2E0"/><stop offset="100%" stop-color="#C0D8A0"/>',
+    head:'#F5FFE8', wing:'#D0E0B8', blush:'rgba(163,184,123,0.4)', beak:'#6A8A3A',
+    accessory:
+      // Explorer hat
+      '<ellipse cx="100" cy="50" rx="34" ry="5" fill="#8B7355"/>'+
+      '<path d="M78 50 Q78 32 100 30 Q122 32 122 50" fill="#A08868"/>'+
+      '<rect x="88" y="42" width="24" height="4" rx="2" fill="#6B5540"/>'+
+      // Compass
+      '<circle cx="55" cy="125" r="10" fill="rgba(255,255,255,0.4)" stroke="#A3B87B" stroke-width="1.5"/>'+
+      '<line x1="55" y1="118" x2="55" y2="132" stroke="#A3B87B" stroke-width="1"/>'+
+      '<line x1="48" y1="125" x2="62" y2="125" stroke="#A3B87B" stroke-width="1"/>'+
+      '<polygon points="55,120 57,125 55,123 53,125" fill="#C46A6A"/>'
+  });},
+  ultimate: function(){ return gooseSVG({
+    id:'ult', bodyGrad:'<stop offset="0%" stop-color="#FDF2D8"/><stop offset="100%" stop-color="#E8C872"/>',
+    head:'#FFFDE7', wing:'#F0E0B0', blush:'rgba(212,168,87,0.5)', beak:'#B8903A',
+    accessory:
+      // Golden crown
+      '<polygon points="82,46 86,26 94,40 100,22 106,40 114,26 118,46" fill="#D4A857" stroke="#B8903A" stroke-width="1.5"/>'+
+      '<rect x="82" y="44" width="36" height="8" rx="3" fill="#D4A857"/>'+
+      '<circle cx="100" cy="32" r="3" fill="#C46A6A"/><circle cx="88" cy="34" r="2.5" fill="#7BA3C4"/><circle cx="112" cy="34" r="2.5" fill="#7BAE8E"/>'+
+      // Halo
+      '<ellipse cx="100" cy="32" rx="28" ry="8" fill="none" stroke="#D4A857" stroke-width="2.5" opacity="0.6"/>'+
+      '<ellipse cx="100" cy="32" rx="28" ry="8" fill="none" stroke="#FFF" stroke-width="1" opacity="0.3"/>',
+    extras:
+      // Stars around
+      '<text x="30" y="60" font-size="14" opacity="0.7">✦</text>'+
+      '<text x="155" y="50" font-size="10" opacity="0.5">✦</text>'+
+      '<text x="40" y="170" font-size="8" opacity="0.4">✦</text>'+
+      '<text x="150" y="165" font-size="12" opacity="0.6">✦</text>'+
+      // Sparkles
+      '<circle cx="35" cy="85" r="2" fill="#D4A857" opacity="0.6"><animate attributeName="opacity" values="0.6;0.1;0.6" dur="2s" repeatCount="indefinite"/></circle>'+
+      '<circle cx="165" cy="90" r="1.5" fill="#D4A857" opacity="0.4"><animate attributeName="opacity" values="0.4;0.1;0.4" dur="1.5s" repeatCount="indefinite"/></circle>'
+  });}
+};
+
+// ============================================================
+// SCENE DATA & RENDERING
+// ============================================================
+var SCENE_DATA = {
+  mbti: {
+    bgClass:'scene-puzzle',
+    bgGradient:'linear-gradient(180deg, #EDE4F5 0%, #E0D8F0 50%, #D8CCF0 100%)',
+    elements:[
+      {emoji:'🧩',x:'10%',y:'20%',size:20,delay:0},{emoji:'🧩',x:'85%',y:'15%',size:16,delay:1.2},
+      {emoji:'🧩',x:'75%',y:'70%',size:14,delay:0.8},{emoji:'⭐',x:'20%',y:'60%',size:18,delay:2},
+      {emoji:'💎',x:'90%',y:'45%',size:16,delay:1.5},{emoji:'🧩',x:'50%',y:'10%',size:12,delay:0.5}
+    ],
+    sparkles:true
+  },
+  attachment: {
+    bgClass:'scene-pink',
+    bgGradient:'linear-gradient(180deg, #FBE4E8 0%, #F5D8E0 50%, #F0C8D5 100%)',
+    elements:[
+      {emoji:'💕',x:'15%',y:'20%',size:22,delay:0},{emoji:'🌸',x:'80%',y:'18%',size:20,delay:1},
+      {emoji:'💗',x:'70%',y:'65%',size:18,delay:1.5},{emoji:'🌹',x:'25%',y:'55%',size:16,delay:0.8},
+      {emoji:'✨',x:'88%',y:'40%',size:14,delay:2},{emoji:'🌸',x:'10%',y:'75%',size:16,delay:1.2}
+    ],
+    sparkles:true
+  },
+  enneagram: {
+    bgClass:'scene-crystal',
+    bgGradient:'linear-gradient(180deg, #FDF2D8 0%, #F5ECC0 50%, #EDE0B0 100%)',
+    elements:[
+      {emoji:'🔷',x:'12%',y:'25%',size:20,delay:0},{emoji:'💎',x:'82%',y:'20%',size:18,delay:1},
+      {emoji:'✨',x:'65%',y:'68%',size:16,delay:1.5},{emoji:'🔮',x:'20%',y:'60%',size:22,delay:0.5},
+      {emoji:'⭐',x:'88%',y:'50%',size:14,delay:2},{emoji:'💎',x:'45%',y:'12%',size:16,delay:1.8}
+    ],
+    sparkles:true
+  },
+  bigfive: {
+    bgClass:'scene-ocean',
+    bgGradient:'linear-gradient(180deg, #DCEDE8 0%, #C8E4DC 40%, #B8DDD0 100%)',
+    elements:[
+      {emoji:'🌊',x:'5%',y:'70%',size:28,delay:0},{emoji:'🐟',x:'78%',y:'55%',size:20,delay:1},
+      {emoji:'🫧',x:'30%',y:'30%',size:18,delay:0.5},{emoji:'🐚',x:'85%',y:'75%',size:16,delay:1.5},
+      {emoji:'🫧',x:'60%',y:'20%',size:14,delay:2},{emoji:'🐬',x:'15%',y:'45%',size:20,delay:0.8}
+    ],
+    waves:true, sparkles:false
+  },
+  animal: {
+    bgClass:'scene-forest',
+    bgGradient:'linear-gradient(180deg, #EBF2E0 0%, #DDE8CC 50%, #D0E0C0 100%)',
+    elements:[
+      {emoji:'🌿',x:'8%',y:'40%',size:22,delay:0},{emoji:'🦋',x:'75%',y:'25%',size:20,delay:1},
+      {emoji:'🌿',x:'85%',y:'60%',size:18,delay:1.5},{emoji:'🍄',x:'20%',y:'70%',size:16,delay:0.8},
+      {emoji:'🦋',x:'55%',y:'15%',size:14,delay:2},{emoji:'🍃',x:'40%',y:'65%',size:16,delay:1.2}
+    ],
+    sparkles:true
+  },
+  love: {
+    bgClass:'scene-postoffice',
+    bgGradient:'linear-gradient(180deg, #FCE4E4 0%, #F5D0D0 50%, #EEC0C5 100%)',
+    elements:[
+      {emoji:'💌',x:'15%',y:'22%',size:22,delay:0},{emoji:'✉️',x:'80%',y:'18%',size:18,delay:1},
+      {emoji:'💝',x:'70%',y:'62%',size:16,delay:1.5},{emoji:'💌',x:'25%',y:'58%',size:20,delay:0.8},
+      {emoji:'🌷',x:'88%',y:'42%',size:16,delay:2},{emoji:'✉️',x:'10%',y:'72%',size:14,delay:1.2}
+    ],
+    sparkles:true
+  },
+  disc: {
+    bgClass:'scene-office',
+    bgGradient:'linear-gradient(180deg, #DFEBF5 0%, #D0E0F0 50%, #C0D5E8 100%)',
+    elements:[
+      {emoji:'📊',x:'12%',y:'25%',size:20,delay:0},{emoji:'📈',x:'80%',y:'20%',size:18,delay:1},
+      {emoji:'📋',x:'72%',y:'65%',size:16,delay:1.5},{emoji:'💡',x:'22%',y:'55%',size:18,delay:0.8},
+      {emoji:'📊',x:'88%',y:'45%',size:14,delay:2},{emoji:'✏️',x:'40%',y:'12%',size:16,delay:1.2}
+    ],
+    sparkles:false
+  },
+  holland: {
+    bgClass:'scene-mountain',
+    bgGradient:'linear-gradient(180deg, #EBF2E0 0%, #DCE8C8 50%, #C8DDB0 100%)',
+    elements:[
+      {emoji:'⛰️',x:'70%',y:'15%',size:26,delay:0},{emoji:'🧭',x:'15%',y:'30%',size:20,delay:1},
+      {emoji:'☁️',x:'50%',y:'10%',size:22,delay:0.5},{emoji:'🗺️',x:'82%',y:'55%',size:18,delay:1.5},
+      {emoji:'🌲',x:'25%',y:'65%',size:20,delay:0.8},{emoji:'🧭',x:'60%',y:'68%',size:16,delay:2}
+    ],
+    sparkles:true
+  }
+};
+
+function renderSceneCard(id, unlocked, result) {
+  var g = GOOSE_DATA[id];
+  var scene = SCENE_DATA[id];
+  var cfg = CONFIG[id];
+  var html = '';
+
+  // Scene background
+  html += '<div class="scene-card" style="animation:fadeInUp .5s ease both">';
+  html += '<div class="scene-bg" style="background:'+scene.bgGradient+'">';
+
+  // Floating elements
+  scene.elements.forEach(function(el) {
+    html += '<div class="float-el" style="left:'+el.x+';top:'+el.y+';font-size:'+el.size+'px;animation-duration:'+(3+el.delay)+'s;animation-delay:'+el.delay+'s">'+el.emoji+'</div>';
+  });
+
+  // Sparkles
+  if(scene.sparkles) {
+    for(var i = 0; i < 8; i++) {
+      var sx = Math.random()*90+5;
+      var sy = Math.random()*70+10;
+      var sd = Math.random()*2;
+      html += '<div class="sparkle" style="left:'+sx+'%;top:'+sy+'%;animation-delay:'+sd+'s"></div>';
+    }
+  }
+
+  // Waves for ocean
+  if(scene.waves) {
+    html += '<div class="wave-line" style="bottom:0"></div>';
+    html += '<div class="wave-line" style="bottom:10px;animation-delay:1.5s;opacity:0.5"></div>';
+  }
+
+  html += '</div>'; // scene-bg
+
+  if(unlocked) {
+    // Goose SVG
+    var svgFn = GOOSE_SVG[id];
+    var gooseArt = svgFn ? svgFn() : g.emoji;
+    html += '<div class="scene-goose-wrap">'+gooseArt+'</div>';
+    // Content overlay at bottom
+    html += '<div class="scene-content">';
+    html += '<div class="scene-name" style="color:'+g.color+'">'+g.name+'</div>';
+    if(result) {
+      html += '<div class="scene-result-text" style="color:'+g.color+'">'+(result.type||'已完成')+'</div>';
+    }
+    html += '<div class="scene-desc-text">'+g.desc.substring(0,60)+'...</div>';
+    // Action buttons
+    html += '<div class="scene-actions">';
+    html += '<button class="scene-btn" style="background:'+g.color+';color:#fff" onclick="event.stopPropagation();showGooseDetail(\''+id+'\')">📖 详情</button>';
+    html += '<button class="scene-btn" style="background:rgba(139,109,74,0.12);color:var(--ink)" onclick="event.stopPropagation();showReview(\''+id+'\')">📋 回顾答卷</button>';
+    html += '</div>';
+    html += '</div>';
+  } else {
+    // Lock overlay
+    html += '<div class="scene-locked">';
+    html += '<div class="lock-icon">🥚</div>';
+    html += '<div class="lock-name">'+g.name+'</div>';
+    html += '<div class="lock-hint">完成 '+cfg.name+' 解锁</div>';
+    html += '</div>';
+  }
+
+  html += '</div>'; // scene-card
+  return html;
+}
+
+function renderUltimateScene(hasUltimate) {
+  var g = GOOSE_DATA.ultimate;
+  var html = '<div class="scene-card" style="animation:fadeInUp .5s ease both">';
+  html += '<div class="scene-bg scene-temple" style="background:linear-gradient(180deg, #FDF2D8 0%, #F0E0B0 50%, #E8D090 100%)">';
+
+  // Golden sparkles
+  for(var i = 0; i < 12; i++) {
+    var sx = Math.random()*90+5;
+    var sy = Math.random()*70+10;
+    var sd = Math.random()*2;
+    html += '<div class="sparkle" style="left:'+sx+'%;top:'+sy+'%;animation-delay:'+sd+'s;background:#D4A857"></div>';
+  }
+
+  // Floating golden symbols
+  ['✦','⭐','✨','💫','✦'].forEach(function(s, i) {
+    html += '<div class="float-el" style="left:'+(10+i*20)+'%;top:'+(15+Math.random()*40)+'%;font-size:'+(12+Math.random()*10)+'px;animation-duration:'+(2.5+i*0.5)+'s;animation-delay:'+i*0.3+'s;color:#D4A857">'+s+'</div>';
+  });
+
+  html += '</div>'; // scene-bg
+
+  if(hasUltimate) {
+    var gooseArt = GOOSE_SVG.ultimate ? GOOSE_SVG.ultimate() : '✨';
+    html += '<div class="scene-goose-wrap">'+gooseArt+'</div>';
+    html += '<div class="scene-content">';
+    html += '<div class="scene-name" style="color:#D4A857;font-size:1.3rem">'+g.name+'</div>';
+    html += '<div class="scene-result-text" style="color:#D4A857">集齐8只大鹅的终极奖励</div>';
+    html += '<div class="scene-desc-text">'+g.desc.substring(0,60)+'...</div>';
+    html += '</div>';
+  } else {
+    html += '<div class="scene-locked">';
+    html += '<div class="lock-icon">🥚</div>';
+    html += '<div class="lock-name" style="color:#D4A857">终极神鹅</div>';
+    html += '<div class="lock-hint">收集全部 8 只大鹅后解锁</div>';
+    html += '</div>';
+  }
+
+  html += '</div>';
+  return html;
+}
+
+// ============================================================
+// UNLOCK CARD POPUP
+// ============================================================
+function showUnlockCard(testId) {
+  var g = GOOSE_DATA[testId];
+  var cfg = CONFIG[testId];
+  var res = state.results[testId];
+  if(!g) return;
+
+  var svgFn = GOOSE_SVG[testId];
+  var gooseArt = svgFn ? svgFn() : '<div style="font-size:6rem">'+g.emoji+'</div>';
+
+  var modal = document.getElementById('unlockModal');
+  var html = '<div class="unlock-card" style="--glow-color:'+g.color+'40" onclick="event.stopPropagation()">';
+
+  // Confetti inside card
+  html += '<div class="unlock-confetti">';
+  var colors = [g.color,'#D4A857','#D4898E','#C4836A','#7BA3C4'];
+  for(var i=0;i<30;i++){
+    var cl = colors[Math.floor(Math.random()*colors.length)];
+    var left = Math.random()*100;
+    var w = Math.random()*6+3;
+    var dur = Math.random()*1.5+1;
+    var del = Math.random()*0.5;
+    html += '<div class="uc-particle" style="left:'+left+'%;top:-10px;width:'+w+'px;height:'+w+'px;background:'+cl+';border-radius:'+(Math.random()>0.5?'50%':'2px')+';animation-duration:'+dur+'s;animation-delay:'+del+'s"></div>';
+  }
+  html += '</div>';
+
+  html += '<div class="unlock-goose-art">'+gooseArt+'</div>';
+  html += '<div class="unlock-title" style="color:'+g.color+'">🎉 获得 '+g.name+'！</div>';
+  html += '<div class="unlock-subtitle">'+g.desc+'</div>';
+  html += '<div class="unlock-tag" style="background:'+g.color+'20;border:1px solid '+g.color+'50;color:'+g.color+'">'+(res?'测试结果：'+(res.type||'已完成'):'已完成测试')+'</div>';
+  html += '<button class="unlock-close-btn" style="background:'+g.color+'" onclick="closeUnlockModal()">太棒了！收入鹅舍 🪿</button>';
+  html += '</div>';
+
+  modal.innerHTML = html;
+  modal.style.display = 'flex';
+}
+
+function closeUnlockModal(e) {
+  if(e && e.target !== document.getElementById('unlockModal')) return;
+  document.getElementById('unlockModal').style.display = 'none';
+}
+
+// ============================================================
+// ANSWER REVIEW SYSTEM
+// ============================================================
+function saveTestReview(testId, session) {
+  try {
+    // Save essential data for review: questions + answers + config
+    var review = {
+      testId: testId,
+      testName: CONFIG[testId].name,
+      testColor: CONFIG[testId].color,
+      questions: session.questions,
+      answers: session.answers,
+      result: state.results[testId],
+      timestamp: Date.now()
+    };
+    localStorage.setItem('pt_review_'+testId, JSON.stringify(review));
+  } catch(e) {}
+}
+
+function loadTestReview(testId) {
+  try {
+    var s = localStorage.getItem('pt_review_'+testId);
+    return s ? JSON.parse(s) : null;
+  } catch(e) { return null; }
+}
+
+function showReview(testId) {
+  var review = loadTestReview(testId);
+  if(!review) {
+    var cfg = CONFIG[testId];
+    var panel = document.getElementById('reviewPanel');
+    panel.innerHTML = '<div class="review-close-bar"><div style="font-size:1rem;font-weight:700;color:'+(cfg?cfg.color:'var(--text-primary)')+'">答卷回顾</div><button onclick="closeReview()">✕ 关闭</button></div><div class="review-panel" style="text-align:center;padding-top:60px"><div style="font-size:3rem;margin-bottom:16px">🌿</div><h3 style="color:var(--text-primary);margin-bottom:8px">答题记录未找到</h3><p style="color:var(--text-secondary);font-size:.9rem;max-width:280px;margin:0 auto 8px">这个测试可能是在回顾功能上线前完成的，没有保存当时的答题记录。</p><p style="color:var(--text-secondary);font-size:.85rem;margin-bottom:24px">重新测试一遍，就能在这里回顾答卷啦～</p><div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap"><button class="bs" style="display:inline-block;width:auto;padding:12px 28px" onclick="closeReview();setTimeout(function(){go(\''+testId+'\')},150)">🔄 重新测试</button><button class="bp" style="display:inline-block;width:auto;padding:12px 28px;background:rgba(139,109,74,0.1);color:var(--ink)" onclick="closeReview()">← 返回</button></div></div>';
+    panel.style.display = 'block';
+    return;
+  }
+
+  var panel = document.getElementById('reviewPanel');
+  var qs = review.questions;
+  var ans = review.answers;
+  var res = review.result;
+  var cfg = CONFIG[testId];
+
+  var html = '';
+
+  // Close bar
+  html += '<div class="review-close-bar">';
+  html += '<div style="font-size:1rem;font-weight:700;color:'+review.testColor+'">'+review.testName+' · 答卷回顾</div>';
+  html += '<button onclick="closeReview()">✕ 关闭</button>';
+  html += '</div>';
+
+  html += '<div class="review-panel">';
+
+  // Header
+  html += '<div class="review-header">';
+  html += '<h2 style="color:'+review.testColor+'">'+cfg.icon+' '+review.testName+'</h2>';
+  html += '<p>测试结果：<strong style="color:'+review.testColor+'">'+(res.type||'已完成')+'</strong> · 共 '+qs.length+' 题</p>';
+  html += '<p style="font-size:.78rem;color:var(--text-secondary);margin-top:4px">'+new Date(review.timestamp).toLocaleString('zh-CN')+'</p>';
+  html += '</div>';
+
+  // Stats
+  html += '<div class="review-stats">';
+  html += '<div class="review-stat"><div class="review-stat-val" style="color:'+review.testColor+'">'+qs.length+'</div><div class="review-stat-label">总题数</div></div>';
+  html += '<div class="review-stat"><div class="review-stat-val" style="color:#7BAE8E">'+(res.type||'✓')+'</div><div class="review-stat-label">测试结果</div></div>';
+  var dur = Math.round((review.timestamp - (review.timestamp - qs.length * 15000)) / 60000);
+  html += '<div class="review-stat"><div class="review-stat-val">~'+Math.max(1,dur)+' min</div><div class="review-stat-label">预计用时</div></div>';
+  html += '</div>';
+
+  // Questions
+  qs.forEach(function(q, i) {
+    var answerText = '';
+    var answerKey = String(i);
+
+    if(testId === 'mbti') {
+      var dim = q.opts[ans[q.opts[0].d] ? 0 : 0];
+      var chosenIdx = -1;
+      var dimName = q.opts[0].d;
+      var arr = ans[dimName] || [];
+      var scoreIdx = arr.length - 1;
+      if(scoreIdx >= 0 && ans._current !== undefined) {
+        // We need to figure out which option was chosen for this question
+        // For MBTI binary, the answer is stored in the dimension array
+        // The score at index i tells us: 1 = first option, 0 = second option
+        var allScores = arr;
+        // This is approximate; we show the question and indicate the dimension
+      }
+      // Simplified: show both options and highlight
+      answerText = '<div style="display:flex;gap:8px;flex-wrap:wrap">';
+      q.opts.forEach(function(o, oi) {
+        answerText += '<span style="padding:4px 12px;border-radius:8px;font-size:.82rem;background:rgba(139,109,74,.06);border:1px solid var(--paper-border)">'+o.l+'</span>';
+      });
+      answerText += '</div>';
+    } else if(q.a) {
+      // Animal type
+      var animalEmojis = {A:'🦁',B:'🐱',C:'🐺',D:'🐬',E:'🦅',F:'🦌',G:'🦊',H:'🦉'};
+      var aniAnswers = ans._ani || [];
+      if(aniAnswers[i]) {
+        var chosen = q.a.find(function(o){ return o.l === aniAnswers[i]; });
+        answerText = '<span style="color:'+review.testColor+'">'+animalEmojis[aniAnswers[i]]+' '+(chosen ? chosen.t : aniAnswers[i])+'</span> — '+(chosen ? chosen.s : '');
+      }
+    } else if(q.d && Array.isArray(q.d) && q.d.length > 2) {
+      // Enneagram
+      var ennAnswers = ans._enn || [];
+      if(ennAnswers[i] !== undefined) {
+        answerText = '<span style="color:'+review.testColor+'">第'+(ennAnswers[i]+1)+'号</span> — '+q.opts[ennAnswers[i]];
+      }
+    } else if(q.d && !Array.isArray(q.d) && q.opts) {
+      // Love/DISC/Holland
+      var a = ans[answerKey];
+      if(a && q.opts[a.v !== undefined ? a.v : a]) {
+        var idx = a.v !== undefined ? a.v : a;
+        answerText = '<span style="color:'+review.testColor+'">'+String.fromCharCode(65+idx)+'. '+q.opts[idx]+'</span>';
+      }
+    } else if(q.opts && !q.d) {
+      // Attachment
+      if(ans[answerKey] !== undefined && q.opts[ans[answerKey]]) {
+        answerText = '<span style="color:'+review.testColor+'">'+String.fromCharCode(65+ans[answerKey])+'. '+q.opts[ans[answerKey]]+'</span>';
+      }
+    } else if(q.d && !q.opts) {
+      // Big5 Likert
+      var b5a = ans[answerKey];
+      if(b5a) {
+        var labels5 = ['非常不同意','不同意','中立','同意','非常同意'];
+        answerText = '<span style="color:'+review.testColor+'">'+b5a.v+'/5</span> — '+labels5[b5a.v-1];
+      }
+    }
+
+    html += '<div class="review-item" style="animation-delay:'+i*0.03+'s">';
+    html += '<div class="review-q-num">Q'+(i+1)+'</div>';
+    html += '<div class="review-q-text">'+q.q+'</div>';
+    html += '<div class="review-a-box" style="border-left-color:'+review.testColor+'">';
+    html += '<div class="review-a-label">你的回答</div>';
+    html += '<div class="review-a-text">'+(answerText || '（未记录）')+'</div>';
+    html += '</div></div>';
+  });
+
+  // Close button at bottom
+  html += '<div style="text-align:center;margin-top:32px">';
+  html += '<button class="bs" style="display:inline-block;width:auto;padding:12px 32px" onclick="closeReview()">← 关闭回顾</button>';
+  html += '</div>';
+
+  html += '</div>'; // review-panel
+  panel.innerHTML = html;
+  panel.style.display = 'block';
+}
+
+function closeReview() {
+  document.getElementById('reviewPanel').style.display = 'none';
+}
+
+// ============================================================
+// GOOSE DETAIL VIEW
+// ============================================================
+function showGooseDetail(testId) {
+  var g = GOOSE_DATA[testId];
+  var res = state.results[testId];
+  var cfg = CONFIG[testId];
+  if(!g) return;
+
+  var panel = document.getElementById('reviewPanel');
+  var svgFn = GOOSE_SVG[testId];
+  var gooseArt = svgFn ? svgFn() : '<div style="font-size:6rem">'+g.emoji+'</div>';
+
+  var html = '<div class="review-close-bar">';
+  html += '<div style="font-size:1rem;font-weight:700;color:'+g.color+'">'+g.name+' · 详细介绍</div>';
+  html += '<button onclick="closeReview()">✕ 关闭</button>';
+  html += '</div>';
+
+  html += '<div class="review-panel" style="text-align:center">';
+  html += '<div style="margin-bottom:24px">'+gooseArt+'</div>';
+  html += '<h2 style="font-size:1.6rem;font-weight:800;color:'+g.color+';margin-bottom:8px">'+g.name+'</h2>';
+  html += '<p style="color:var(--text-secondary);font-size:.85rem;margin-bottom:16px">'+cfg.icon+' '+cfg.name+'</p>';
+
+  if(res) {
+    html += '<div style="display:inline-block;padding:8px 20px;border-radius:20px;background:'+g.color+'20;border:1px solid '+g.color+'40;color:'+g.color+';font-weight:700;font-size:1rem;margin-bottom:20px">'+(res.type||'已完成')+'</div>';
+  }
+
+  html += '<div style="background:var(--paper);border:1px solid var(--paper-border);border-radius:18px;padding:24px;text-align:left;margin-bottom:24px">';
+  html += '<p style="line-height:1.9;font-size:.95rem;color:var(--text-primary)">'+g.desc+'</p>';
+  html += '</div>';
+
+  if(res && res.desc) {
+    html += '<div style="background:var(--paper);border:1px solid var(--paper-border);border-radius:18px;padding:24px;text-align:left">';
+    html += '<h3 style="font-size:.82rem;letter-spacing:.08em;color:var(--text-secondary);margin-bottom:10px;text-transform:uppercase">📊 你的测试结果</h3>';
+    html += '<p style="line-height:1.8;font-size:.93rem;color:var(--text-primary)">'+res.desc+'</p>';
+    if(res.traits) {
+      html += '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:12px">';
+      res.traits.forEach(function(t){html += '<span style="padding:3px 12px;border-radius:16px;font-size:.75rem;background:'+g.color+'15;color:'+g.color+';border:1px solid '+g.color+'30">'+t+'</span>';});
+      html += '</div>';
+    }
+    if(res.advice) {
+      html += '<p style="margin-top:14px;padding:12px 16px;background:rgba(139,109,74,.06);border-radius:12px;font-size:.88rem;color:var(--text-secondary);line-height:1.7">💡 '+res.advice+'</p>';
+    }
+    html += '</div>';
+  }
+
+  html += '<div style="margin-top:24px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap">';
+  html += '<button class="bs" style="display:inline-block;width:auto;padding:12px 32px" onclick="closeReview()">← 返回鹅舍</button>';
+  html += '<button class="bs" style="display:inline-block;width:auto;padding:12px 32px" onclick="closeReview();setTimeout(function(){showReview(\''+testId+'\')},100)">📋 回顾答卷</button>';
+  html += '</div>';
+  html += '</div>';
+
+  panel.innerHTML = html;
+  panel.style.display = 'block';
+}
+
+// ============================================================
+// INIT
+// ============================================================
+loadResults();
+initParticles();
+updateHomeCards();
+updateDashBtn();
+</script>
+</body>
+</html>
